@@ -5,7 +5,7 @@
   "main": "lib/index.js",
   "scripts": {
     "start": "nodemon"
-    },
+  },
   "author": "",
   "license": "UNLICENSED",
   "bugs": {

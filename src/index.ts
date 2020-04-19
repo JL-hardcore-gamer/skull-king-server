@@ -19,7 +19,7 @@ const gameServer = new Server({
 });
 
 // register your room handlers
-gameServer.define('skullking', SkullKing);
+gameServer.define('arena', SkullKing);
 
 /**
  * Register @colyseus/social routes
@@ -30,7 +30,7 @@ gameServer.define('skullking', SkullKing);
 // app.use("/", socialRoutes);
 
 // register colyseus monitor AFTER registering your room handlers
-app.use("/colyseus", monitor());
+// app.use("/colyseus", monitor());
 
 gameServer.listen(port);
 console.log(`Listening on ws://localhost:${ port }`)
