@@ -1,40 +1,7 @@
-import http from "http";
 import { Room, Client } from "colyseus";
-
-
-import { Schema, MapSchema, ArraySchema, type } from "@colyseus/schema";
-
-
-export class Player extends Schema {
-  @type("number") x: number = 0.11;
-  @type("number") y: number = 2.22;
-}
-
-// "Items inside Arrays and Maps must be all instance of the same type."
-// CardType is a `type` so we can actually mix string and number
-// It's more logical
-export class CardType extends Schema {
-  @type("string") name: string;
-  @type("number") cost: number = 0;
-
-  constructor(name: string) {
-    super();
-
-    this.name = name;
-  }
-}
-
-export class State extends Schema {
-  @type({ map: Player })
-  players = new MapSchema<Player>();
-  
-  @type([ CardType ])
-  rounds = new ArraySchema<CardType>();
-
-  // You can add as many stuff as you want actually
-}
-
-
+import { State } from './State';
+import { Card } from './Card';
+import { Player } from './Player';
 
 export class SkullKing extends Room<State> {
     // When room is initialized
@@ -47,10 +14,10 @@ export class SkullKing extends Room<State> {
     // When client successfully join the room
     onJoin (client: Client, options: any, auth: any) {
       console.log("joined")
-      const card = ["SkullKing", "Pirate", "Red1", "Red2"];
+      const cards = ["SkullKing", "Pirate", "Red1", "Red2"];
       // Play with an array
-      card.forEach(cardName => {
-        const newRound = new CardType(cardName)
+      cards.forEach(cardName => {
+        const newRound = new Card(cardName)
         this.state.rounds.push(newRound);
       })
 
