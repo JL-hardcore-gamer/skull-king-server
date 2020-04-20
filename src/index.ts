@@ -15,7 +15,7 @@ let db = new sqlite3.Database(dbPath, sqlite3.OPEN_READWRITE, (err: any) => {
   if (err) {
     console.error(err.message);
   }
-  console.log('Connected to the test.db database.');
+  console.log('Connected to the game.db database.');
 });
 
 if (false) {
@@ -23,7 +23,8 @@ if (false) {
   // Need to setup correctly to write correctly a `setupDB.js`
   db.run(`
   CREATE TABLE users (
-    email TEXT,
+    ID INTEGER PRIMARY KEY AUTOINCREMENT,
+    email TEXT UNIQUE,
     nickname TEXT,
     hash TEXT
   );
@@ -40,34 +41,54 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.post('/login', (req, res) => {
-  console.log('req.body', req.body.email);
-
-  if (req.body.email) {
-    // TODO Check if the email is already store in the db
-    // Return the hash and the nickname
-
-    res.send('OK');
+app.post('/api/signin', (req, res) => {
+  const { body } = req;
+  if (body.email) {
+    db.get(
+      `SELECT * FROM users WHERE email = ?`,
+      [body.email],
+      (e: any, row: any) => {
+        if (e) {
+          res.sendStatus(400);
+        } else {
+          if (row) {
+            res.send({
+              hash: row.hash,
+              nickname: row.nickname,
+            });
+          } else {
+            res.status(400).send('User not found');
+          }
+        }
+      }
+    );
   } else {
     res.sendStatus(400);
   }
 });
 
-app.post('/signup', (req, res: any) => {
-  if (req.body && req.body.email && res.body.nickname) {
-    // TODO Check if the email is already store in the db
-    // Return an error
-    db.run('INSERT INTO users(email, nickname, hash) VALUES(?, ?)', [
-      'test@gmail.com',
-      'toto',
-      'd1770f154ac0f9e0394498ad',
-    ]);
-    // Else Create it, store it and return the hash and the nickname
-    bcrypt.hash(req.body.email, saltRounds, (err: any, hash: string) => {
-      // TODO Store hash in your password DB.
-      console.log('hash', hash);
+app.post('/api/signup', (req, res: any) => {
+  const { body } = req;
+  if (body && body.email && body.nickname) {
+    bcrypt.hash(body.email, saltRounds, (err: any, hash: string) => {
+      db.run(
+        'INSERT INTO users(email, nickname, hash) VALUES(?, ?, ?)',
+        [body.email, body.nickname, hash],
+        (e: any) => {
+          if (e) {
+            res.status(400).send('Cannot create user');
+          } else {
+            res.send({
+              hash: hash,
+              nickname: req.body.nickname,
+            });
+          }
+        }
+      );
     });
-    res.send('App is working');
+  } else {
+    // Bad Request
+    res.sendStatus(400);
   }
 });
 
