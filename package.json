@@ -23,9 +23,13 @@
   "dependencies": {
     "@colyseus/monitor": "^0.11.0",
     "@colyseus/social": "^0.10.2",
+    "@types/bcrypt": "^3.0.0",
+    "bcrypt": "^4.0.1",
     "colyseus": "^0.12.0",
+    "core-util-is": "^1.0.2",
     "cors": "^2.8.5",
     "express": "^4.16.4",
-    "express-jwt": "^5.3.1"
+    "express-jwt": "^5.3.1",
+    "sqlite3": "^4.1.1"
   }
 }
