@@ -59,6 +59,8 @@ app.post('/api/signin', (req, res) => {
 app.post('/api/signup', (req, res: any) => {
   const { body } = req;
   if (body && body.email && body.nickname) {
+    // FIXME Need to check if email and nickname are correct
+
     bcrypt.hash(body.email, saltRounds, (err: any, hash: string) => {
       db.run(
         'INSERT INTO users(email, nickname, token) VALUES(?, ?, ?)',

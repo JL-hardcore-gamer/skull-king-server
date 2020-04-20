@@ -11,4 +11,11 @@ export class Player extends Schema {
 
   @type('string')
   email: string = 'marcel@aol.com';
+
+  constructor(id: number, name: string, email: string) {
+    super();
+    this.id = id;
+    this.name = name;
+    this.email = email;
+  }
 }

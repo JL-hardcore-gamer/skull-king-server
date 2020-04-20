@@ -5,7 +5,17 @@ import { Player } from './Player';
 
 const db = require('./db/database');
 
+const getRandom = (min: number, max: number) => {
+  return Math.random() * (max - min) + min;
+};
+
 export class SkullKing extends Room<State> {
+  constructor() {
+    super();
+
+    this.maxClients = 6;
+  }
+
   // When room is initialized
   onCreate(options: any) {
     console.log('created!', options);
@@ -38,8 +48,14 @@ export class SkullKing extends Room<State> {
 
   // When client successfully join the room
   onJoin(client: Client, options: any, user: any) {
-    // User is for the data retreive by onAuth
+    // User is for the data retrieve by onAuth
     console.log('joined', user);
+
+    this.state.players[user.nickname] = new Player(
+      getRandom(0, 1000),
+      user.nickname,
+      user.email
+    );
 
     const cards = ['SkullKing', 'Pirate', 'Red1', 'Red2'];
     // Play with an array
@@ -47,9 +63,6 @@ export class SkullKing extends Room<State> {
       const newRound = new Card(cardName);
       this.state.rounds.push(newRound);
     });
-
-    // Play with an map (object)
-    this.state.players['player1'] = new Player();
   }
 
   // When a client sends a message
