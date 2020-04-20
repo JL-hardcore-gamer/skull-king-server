@@ -35,5 +35,7 @@ export class State extends Schema {
 
   @type(Game)
   game: Game;
-  // You can add as many stuff as you want actually
+
+  @type('string')
+  roomOwner: string;
 }

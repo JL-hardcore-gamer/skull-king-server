@@ -4,34 +4,23 @@ import cors from 'cors';
 import { Server } from 'colyseus';
 import { monitor } from '@colyseus/monitor';
 import bcrypt from 'bcrypt';
-const path = require('path');
-const sqlite3 = require('sqlite3').verbose();
 
 import { SkullKing } from './SkullKing';
 
-const dbPath = path.resolve(__dirname, 'db/game.db');
-
-let db = new sqlite3.Database(dbPath, sqlite3.OPEN_READWRITE, (err: any) => {
-  if (err) {
-    console.error(err.message);
-  }
-  console.log('Connected to the game.db database.');
-});
+const db = require('./db/database');
 
 if (false) {
   // Create users table
   // Need to setup correctly to write correctly a `setupDB.js`
   db.run(`
-  CREATE TABLE users (
-    ID INTEGER PRIMARY KEY AUTOINCREMENT,
-    email TEXT UNIQUE,
-    nickname TEXT,
-    hash TEXT
-  );
-`);
+    CREATE TABLE users (
+      ID INTEGER PRIMARY KEY AUTOINCREMENT,
+      email TEXT UNIQUE,
+      nickname TEXT UNIQUE,
+      token TEXT UNIQUE
+    );
+  `);
 }
-
-// db.run('INSERT INTO users(email, nickname, hash) VALUES(?, ?, ?)', ['test@gmail.com', 'toto','d1770f154ac0f9e0394498ad'])
 
 const saltRounds = 10;
 
@@ -53,7 +42,7 @@ app.post('/api/signin', (req, res) => {
         } else {
           if (row) {
             res.send({
-              hash: row.hash,
+              token: row.token,
               nickname: row.nickname,
             });
           } else {
@@ -72,14 +61,14 @@ app.post('/api/signup', (req, res: any) => {
   if (body && body.email && body.nickname) {
     bcrypt.hash(body.email, saltRounds, (err: any, hash: string) => {
       db.run(
-        'INSERT INTO users(email, nickname, hash) VALUES(?, ?, ?)',
+        'INSERT INTO users(email, nickname, token) VALUES(?, ?, ?)',
         [body.email, body.nickname, hash],
         (e: any) => {
           if (e) {
             res.status(400).send('Cannot create user');
           } else {
             res.send({
-              hash: hash,
+              token: hash,
               nickname: req.body.nickname,
             });
           }
