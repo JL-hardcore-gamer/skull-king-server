@@ -1,9 +1,9 @@
-import { Schema, MapSchema, ArraySchema, type } from "@colyseus/schema";
-import { Player } from './Player'
-import { Card } from './Card'
-import { Trick } from './Trick'
-import { Round } from './Round'
-import { Game } from "./Game";
+import { Schema, MapSchema, ArraySchema, type } from '@colyseus/schema';
+import { Player } from './Player';
+import { Card } from './Card';
+import { Trick } from './Trick';
+import { Round } from './Round';
+import { Game } from './Game';
 
 /*
 What does this mean? (constructor... name)
@@ -23,8 +23,8 @@ export class CardType extends Schema {
 export class State extends Schema {
   @type({ map: Player })
   players = new MapSchema<Player>();
-  
-  @type([ Card ])
+
+  @type([Card])
   rounds = new ArraySchema<Card>();
 
   @type(Trick)
@@ -37,4 +37,3 @@ export class State extends Schema {
   game: Game;
   // You can add as many stuff as you want actually
 }
-

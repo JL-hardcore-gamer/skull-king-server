@@ -1,11 +1,11 @@
-import { Schema, ArraySchema, type } from "@colyseus/schema";
+import { Schema, ArraySchema, type } from '@colyseus/schema';
 
-import { Card } from './Card'
+import { Card } from './Card';
 
 export class PlayerHand extends Schema {
-  @type([ Card ])
+  @type([Card])
   hand = new ArraySchema<Card>();
 
-  @type([ Card ])
+  @type([Card])
   allowedCards = new ArraySchema<Card>();
 }

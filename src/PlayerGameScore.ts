@@ -1,4 +1,4 @@
-import { Schema, type } from "@colyseus/schema";
+import { Schema, type } from '@colyseus/schema';
 
 export class PlayerGameScore extends Schema {
   @type('number')

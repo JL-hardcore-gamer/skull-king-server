@@ -1,6 +1,6 @@
-import { Schema, MapSchema, ArraySchema, type } from "@colyseus/schema";
+import { Schema, MapSchema, ArraySchema, type } from '@colyseus/schema';
 import { Card } from './Card';
-import { PlayerRoundScore } from "./PlayerRoundScore";
+import { PlayerRoundScore } from './PlayerRoundScore';
 import { PlayerHand } from './PlayerHand';
 
 export class Round extends Schema {
@@ -15,7 +15,7 @@ export class Round extends Schema {
   firstPlayer: number;
   // first player of the trick (except first trick), depends on the last trick winner
 
-  @type([ Card ])
+  @type([Card])
   deckCards = new ArraySchema<Card>();
 
   @type('number')
