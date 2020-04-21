@@ -60,23 +60,30 @@ app.post('/api/signup', (req, res: any) => {
   const { body } = req;
   if (body && body.email && body.nickname) {
     // FIXME Need to check if email and nickname are correct
+    const regexName = new RegExp(/^[a-z0-9]+$/, 'gi');
+    const regexEmail = new RegExp(/^[\w-.]+@([\w-]+\.)+[\w-]+$/, "gi");
 
-    bcrypt.hash(body.email, saltRounds, (err: any, hash: string) => {
-      db.run(
-        'INSERT INTO users(email, nickname, token) VALUES(?, ?, ?)',
-        [body.email, body.nickname, hash],
-        (e: any) => {
-          if (e) {
-            res.status(400).send('Cannot create user');
-          } else {
-            res.send({
-              token: hash,
-              nickname: req.body.nickname,
-            });
+    if (regexName.test(body.nickname) && regexEmail.test(body.email)) {
+      // shouldn't we force the conversion of body.email to lowercase?
+      // body.email = body.email.toLowerCase();
+
+      bcrypt.hash(body.email, saltRounds, (err: any, hash: string) => {
+        db.run(
+          'INSERT INTO users(email, nickname, token) VALUES(?, ?, ?)',
+          [body.email, body.nickname, hash],
+          (e: any) => {
+            if (e) {
+              res.status(400).send('Cannot create user');
+            } else {
+              res.send({
+                token: hash,
+                nickname: req.body.nickname,
+              });
+            }
           }
-        }
-      );
-    });
+        );
+      });
+    }
   } else {
     // Bad Request
     res.sendStatus(400);

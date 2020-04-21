@@ -1,2 +1,4 @@
 node_modules
 .vscode
+src/db/game.db
+draft.ts
