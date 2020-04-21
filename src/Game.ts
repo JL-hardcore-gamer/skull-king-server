@@ -29,11 +29,31 @@ export class Game extends Schema {
   // unfinished
   createDeck() {
     const suits = ['red', 'blue', 'yellow', 'black'];
-    const numericValues = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13'];
-    const specialValues = { 'Skull King': 1, 'Mermaid': 2, 'Pirate':5, 'White Flag': 5, 'Bloody Mary': 1};
+    const numericValues = [
+      '1',
+      '2',
+      '3',
+      '4',
+      '5',
+      '6',
+      '7',
+      '8',
+      '9',
+      '10',
+      '11',
+      '12',
+      '13',
+    ];
+    const specialValues = {
+      'Skull King': 1,
+      Mermaid: 2,
+      Pirate: 5,
+      'White Flag': 5,
+      'Bloody Mary': 1,
+    };
 
-    suits.forEach(suit => {
-      numericValues.forEach(num => {
+    suits.forEach((suit) => {
+      numericValues.forEach((num) => {
         this.deck.push(new Card(suit, num));
       });
     });

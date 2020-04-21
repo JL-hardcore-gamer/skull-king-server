@@ -18,8 +18,9 @@ export class State extends Schema {
   @type(Round)
   currentRound: Round;
 
+  // game: Game; => game = new Game();
   @type(Game)
-  game: Game;
+  game = new Game();
 
   @type('string')
   roomOwner: string;

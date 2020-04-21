@@ -60,7 +60,7 @@ app.post('/api/signup', (req, res: any) => {
   const { body } = req;
   if (body && body.email && body.nickname) {
     const regexName = new RegExp(/^[a-z0-9éèê]+$/, 'gi');
-    const regexEmail = new RegExp(/^[\w-.]+@([\w-]+\.)+[\w-]+$/, "gi");
+    const regexEmail = new RegExp(/^[\w-.]+@([\w-]+\.)+[\w-]+$/, 'gi');
 
     if (regexName.test(body.nickname) && regexEmail.test(body.email)) {
       // shouldn't we force the conversion of body.email to lowercase?

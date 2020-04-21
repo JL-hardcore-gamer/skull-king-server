@@ -2,7 +2,7 @@ import { Room, Client } from 'colyseus';
 import { State } from './State';
 import { Card } from './Card';
 import { Player } from './Player';
-
+import { Game } from './Game';
 const db = require('./db/database');
 
 const getRandom = (min: number, max: number) => {
@@ -26,7 +26,7 @@ export class SkullKing extends Room<State> {
       this.state.roomOwner = options.nickname;
     }
 
-    console.log('state:', this.state.game.deck);
+    this.state.game.createDeck();
   }
 
   async onAuth(client: any, options: any) {
@@ -59,12 +59,7 @@ export class SkullKing extends Room<State> {
       user.email
     );
 
-    // const cards = ['SkullKing', 'Pirate', 'Red1', 'Red2'];
-    // // Play with an array
-    // cards.forEach((cardName) => {
-    //   const newRound = new Card(cardName);
-    //   this.state.rounds.push(newRound);
-    // });
+    // game.createDeck();
   }
 
   // When a client sends a message
