@@ -25,6 +25,8 @@ export class SkullKing extends Room<State> {
     if (options.nickname) {
       this.state.roomOwner = options.nickname;
     }
+
+    console.log('state:', this.state.game.deck);
   }
 
   async onAuth(client: any, options: any) {
@@ -57,12 +59,12 @@ export class SkullKing extends Room<State> {
       user.email
     );
 
-    const cards = ['SkullKing', 'Pirate', 'Red1', 'Red2'];
-    // Play with an array
-    cards.forEach((cardName) => {
-      const newRound = new Card(cardName);
-      this.state.rounds.push(newRound);
-    });
+    // const cards = ['SkullKing', 'Pirate', 'Red1', 'Red2'];
+    // // Play with an array
+    // cards.forEach((cardName) => {
+    //   const newRound = new Card(cardName);
+    //   this.state.rounds.push(newRound);
+    // });
   }
 
   // When a client sends a message

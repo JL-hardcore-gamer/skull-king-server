@@ -27,7 +27,6 @@ const db = {
         /* etc */
       },
     },
-    players: [1, 2, 3, 4],
     players: {
       1: {
         name: "Marcel",
@@ -38,6 +37,9 @@ const db = {
         /* rest of the players ommitted  */
       },
     },
+    deck: [
+      /* Card objects */
+    ]
   },
 
   round: {

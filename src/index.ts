@@ -59,8 +59,7 @@ app.post('/api/signin', (req, res) => {
 app.post('/api/signup', (req, res: any) => {
   const { body } = req;
   if (body && body.email && body.nickname) {
-    // FIXME Need to check if email and nickname are correct
-    const regexName = new RegExp(/^[a-z0-9]+$/, 'gi');
+    const regexName = new RegExp(/^[a-z0-9éèê]+$/, 'gi');
     const regexEmail = new RegExp(/^[\w-.]+@([\w-]+\.)+[\w-]+$/, "gi");
 
     if (regexName.test(body.nickname) && regexEmail.test(body.email)) {

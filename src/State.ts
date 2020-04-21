@@ -5,21 +5,6 @@ import { Trick } from './Trick';
 import { Round } from './Round';
 import { Game } from './Game';
 
-/*
-What does this mean? (constructor... name)
-
-export class CardType extends Schema {
-  @type("string") name: string;
-  @type("number") cost: number = 0;
-
-  constructor(name: string) {
-    super();
-
-    this.name = name;
-  }
-}
-*/
-
 export class State extends Schema {
   @type({ map: Player })
   players = new MapSchema<Player>();

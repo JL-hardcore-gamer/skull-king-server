@@ -14,4 +14,10 @@ export class Card extends Schema {
 
   @type('string')
   friendlyName: string;
+
+  constructor(suit: string, character: string) {
+    super();
+    this.suit = suit;
+    this.character = character;
+  }
 }
