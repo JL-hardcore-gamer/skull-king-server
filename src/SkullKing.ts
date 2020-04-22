@@ -1,8 +1,6 @@
 import { Room, Client } from 'colyseus';
 import { State } from './State';
-import { Card } from './Card';
 import { Player } from './Player';
-import { Game } from './Game';
 const db = require('./db/database');
 
 const getRandom = (min: number, max: number) => {
@@ -12,7 +10,6 @@ const getRandom = (min: number, max: number) => {
 export class SkullKing extends Room<State> {
   constructor() {
     super();
-
     this.maxClients = 6;
   }
 
@@ -27,8 +24,7 @@ export class SkullKing extends Room<State> {
     }
 
     // To be removed once START_GAME is in effect
-    this.state.game.createDeck();
-    this.state.game.shuffleDeck();
+    this.state.game.start();
   }
 
   async onAuth(client: any, options: any) {
@@ -70,10 +66,7 @@ export class SkullKing extends Room<State> {
  
     if (message.type === 'START_GAME') {    
       // should I enforce that client id = room owner?
-      
-      this.state.game.createDeck();
-      this.state.game.shuffleDeck();
-
+      this.state.game.start();
     }
   }
 

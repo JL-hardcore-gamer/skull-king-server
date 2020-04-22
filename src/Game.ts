@@ -69,14 +69,32 @@ export class Game extends Schema {
   }
 
   shuffleDeck() {
-    function shuffle(a:Array<Card>) {
+    function shuffle(a: Array<Card>) {
       for (let i = a.length - 1; i > 0; i--) {
-          const j = Math.floor(Math.random() * (i + 1));
-          [a[i], a[j]] = [a[j], a[i]];
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
       }
       return a;
     }
-
     shuffle(this.deck);
+  }
+
+  shufflePlayers() {
+    // i don't know how to avoid the repetition of the shuffle method :(
+    // (because I need to strongly type the array's content)
+    function shuffle(a: Array<Player>) {
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+    shuffle(this.players);
+  }
+
+  start() {
+    this.createDeck();
+    this.shuffleDeck();
+    this.shufflePlayers();
   }
 }
