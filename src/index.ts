@@ -63,8 +63,7 @@ app.post('/api/signup', (req, res: any) => {
     const regexEmail = new RegExp(/^[\w-.]+@([\w-]+\.)+[\w-]+$/, 'gi');
 
     if (regexName.test(body.nickname) && regexEmail.test(body.email)) {
-      // shouldn't we force the conversion of body.email to lowercase?
-      // body.email = body.email.toLowerCase();
+      body.email = body.email.toLowerCase();
 
       bcrypt.hash(body.email, saltRounds, (err: any, hash: string) => {
         db.run(

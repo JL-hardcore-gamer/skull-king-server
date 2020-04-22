@@ -26,7 +26,6 @@ export class Game extends Schema {
   @type([Card])
   deck = new ArraySchema<Card>();
 
-  // unfinished
   createDeck() {
     const suits = ['red', 'blue', 'yellow', 'black'];
     const numericValues = [
@@ -67,5 +66,17 @@ export class Game extends Schema {
         id += 1;
       }
     }
+  }
+
+  shuffleDeck() {
+    function shuffle(a:Array<Card>) {
+      for (let i = a.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    shuffle(this.deck);
   }
 }

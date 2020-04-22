@@ -27,6 +27,7 @@ export class SkullKing extends Room<State> {
     }
 
     this.state.game.createDeck();
+    this.state.game.shuffleDeck();
   }
 
   async onAuth(client: any, options: any) {
