@@ -44,7 +44,7 @@ export class Game extends Schema {
       '12',
       '13',
     ];
-    const specialValues = {
+    const specialValues:Record<string, number> = {
       'Skull King': 1,
       Mermaid: 2,
       Pirate: 5,
@@ -52,10 +52,20 @@ export class Game extends Schema {
       'Bloody Mary': 1,
     };
 
+    let id = 1;
+
     suits.forEach((suit) => {
       numericValues.forEach((num) => {
-        this.deck.push(new Card(suit, num));
+        this.deck.push(new Card(id, suit, num));
+        id += 1;
       });
     });
+
+    for (const character in specialValues) {
+      for (let num = specialValues[character]; num > 0; num -= 1) {
+        this.deck.push(new Card(id, 'special', character));
+        id += 1;
+      }
+    }
   }
 }
