@@ -89,6 +89,32 @@ app.post('/api/signup', (req, res: any) => {
   }
 });
 
+app.post('/api/check-user', (req, res) => {
+  const { body } = req;
+  if (body.nickname && body.token) {
+    db.get(
+      `SELECT * FROM users WHERE nickname = ? AND token = ?`,
+      [body.nickname, body.token],
+      (e: any, row: any) => {
+        if (e) {
+          res.sendStatus(400);
+        } else {
+          if (row) {
+            res.send({
+              token: row.token,
+              nickname: row.nickname,
+            });
+          } else {
+            res.status(401).send({ valid: false });
+          }
+        }
+      }
+    );
+  } else {
+    res.sendStatus(400);
+  }
+});
+
 const server = http.createServer(app);
 const gameServer = new Server({
   server,
