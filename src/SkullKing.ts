@@ -59,8 +59,6 @@ export class SkullKing extends Room<State> {
       user.nickname,
       user.email
     );
-
-    // game.createDeck();
   }
 
   // When a client sends a message

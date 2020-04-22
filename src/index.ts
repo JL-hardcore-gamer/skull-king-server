@@ -35,7 +35,7 @@ app.post('/api/signin', (req, res) => {
   if (body.email) {
     db.get(
       `SELECT * FROM users WHERE email = ?`,
-      [body.email],
+      [body.email.toLowerCase()],
       (e: any, row: any) => {
         if (e) {
           res.sendStatus(400);
