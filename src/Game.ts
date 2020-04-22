@@ -3,6 +3,7 @@ import { Player } from './Player';
 import { Round } from './Round';
 import { PlayerGameScore } from './PlayerGameScore';
 import { Card } from './Card';
+import { State } from './State';
 
 export class Game extends Schema {
   @type('number')
@@ -20,6 +21,7 @@ export class Game extends Schema {
   @type({ map: PlayerGameScore })
   scoreboard = new MapSchema<PlayerGameScore>();
 
+  // competes with State.players, should probably be removed
   @type([Player])
   players = new ArraySchema<Player>();
 

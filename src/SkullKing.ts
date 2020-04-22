@@ -24,7 +24,7 @@ export class SkullKing extends Room<State> {
     }
 
     // To be removed once START_GAME is in effect
-    this.state.game.start();
+    // this.state.game.start();
   }
 
   async onAuth(client: any, options: any) {
@@ -67,6 +67,11 @@ export class SkullKing extends Room<State> {
     if (message.type === 'START_GAME') {    
       // should I enforce that client id = room owner?
       this.state.game.start();
+
+      // tests
+      console.log(this.state.game.players);
+      console.log(this.state.players);
+      this.state.sortPlayers();
     }
   }
 
