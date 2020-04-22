@@ -26,6 +26,7 @@ export class SkullKing extends Room<State> {
       this.state.roomOwner = options.nickname;
     }
 
+    // To be removed once START_GAME is in effect
     this.state.game.createDeck();
     this.state.game.shuffleDeck();
   }
@@ -64,6 +65,16 @@ export class SkullKing extends Room<State> {
   // When a client sends a message
   onMessage(client: Client, message: any) {
     console.log('message received:', message);
+    console.log('client:', client.auth.nickname); 
+    console.log('client ID:', client.auth.ID);
+ 
+    if (message.type === 'START_GAME') {    
+      // should I enforce that client id = room owner?
+      
+      this.state.game.createDeck();
+      this.state.game.shuffleDeck();
+
+    }
   }
 
   // When a client leaves the room
