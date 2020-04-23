@@ -45,7 +45,7 @@ export class Game extends Schema {
       '12',
       '13',
     ];
-    const specialValues:Record<string, number> = {
+    const specialValues: Record<string, number> = {
       'Skull King': 1,
       Mermaid: 2,
       Pirate: 5,
@@ -98,5 +98,11 @@ export class Game extends Schema {
     this.createDeck();
     this.shuffleDeck();
     this.shufflePlayers();
+
+    /**
+     * Patrick Test
+     */
+
+    this.remainingRounds.push(new Round());
   }
 }

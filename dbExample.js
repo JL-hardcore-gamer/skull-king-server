@@ -29,8 +29,8 @@ const db = {
     },
     players: {
       1: {
-        name: "Marcel",
-        email: "marcel@aol.com",
+        name: 'Marcel',
+        email: 'marcel@aol.com',
         // sessionId: "d1770f154ac0f9e0394498ad"
       },
       2: {
@@ -39,7 +39,7 @@ const db = {
     },
     deck: [
       /* Card objects */
-    ]
+    ],
   },
 
   round: {
@@ -82,11 +82,29 @@ const db = {
       ],
     },
     /* rest of the players' hand ommitted */
+
+    /**
+     * Patrick Test start
+     */
+    playersHand: {
+      MonPote: {
+        hand: [1, 2, 3, 4, 5],
+        allowedCards: [1, 2],
+      },
+      Tony: {
+        hand: [8, 7, 23, 34, 9],
+        allowedCards: [34, 9],
+      },
+    },
+
+    /**
+     * Patrick Test end
+     */
   },
 
   trick: {
     id: 4,
-    suit: "Red",
+    suit: 'Red',
     cardsPlayed: [
       /* Card objects */
     ],
@@ -97,8 +115,8 @@ const db = {
 
   card: {
     id: 42,
-    suit: "Red", // possible values: red, blue, yellow, black, special
-    character: "3", // possible values: number from 1 to 13, Skull King, Mermaid, Pirate, White flag, Bloody Mary
-    friendlyName: "le 3 Rouge", // le Skull King, une Sirène, le 1 Noir...
+    suit: 'Red', // possible values: red, blue, yellow, black, special
+    character: '3', // possible values: number from 1 to 13, Skull King, Mermaid, Pirate, White flag, Bloody Mary
+    friendlyName: 'le 3 Rouge', // le Skull King, une Sirène, le 1 Noir...
   },
 };

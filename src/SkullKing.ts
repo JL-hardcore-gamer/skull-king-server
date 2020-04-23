@@ -1,6 +1,7 @@
 import { Room, Client } from 'colyseus';
 import { State } from './State';
 import { Player } from './Player';
+import { Card } from './Card';
 const db = require('./db/database');
 
 const getRandom = (min: number, max: number) => {
@@ -15,7 +16,7 @@ export class SkullKing extends Room<State> {
 
   // When room is initialized
   onCreate(options: any) {
-    console.log('created!', options);
+    console.log(`${options.nickname} create a room !`);
     this.setState(new State());
 
     // Useful to display the owner of the room
@@ -49,7 +50,7 @@ export class SkullKing extends Room<State> {
   // When client successfully join the room
   onJoin(client: Client, options: any, user: any) {
     // User is for the data retrieve by onAuth
-    console.log('joined', user);
+    console.log(`${user.nickname} joined the room !`);
 
     this.state.players[user.nickname] = new Player(
       getRandom(0, 1000),
@@ -61,17 +62,28 @@ export class SkullKing extends Room<State> {
   // When a client sends a message
   onMessage(client: Client, message: any) {
     console.log('message received:', message);
-    console.log('client:', client.auth.nickname); 
+    console.log('client:', client.auth.nickname);
     console.log('client ID:', client.auth.ID);
- 
-    if (message.type === 'START_GAME') {    
+
+    if (message.type === 'START_GAME') {
       // should I enforce that client id = room owner?
+
       this.state.game.start();
 
+      // After setup the game the front-end can subscribe to
+      // state.game.remainingRounds[0].playersHand['MonPote'].hand
+      // And display it
+
+      console.log(
+        'MonPote hand first card friendlyName',
+        this.state.game.remainingRounds[0].playersHand['MonPote'].hand[0]
+          .friendlyName
+      );
+
       // tests
-      console.log(this.state.game.players);
-      console.log(this.state.players);
-      this.state.sortPlayers();
+      // console.log('game players', this.state.game.players);
+      // console.log('players', this.state.players);
+      // this.state.sortPlayers();
     }
   }
 

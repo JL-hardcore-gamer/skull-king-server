@@ -30,4 +30,23 @@ export class Round extends Schema {
   @type(PlayerHand)
   player2Hand: PlayerHand;
   // repeat as many times as there are players
+
+  /**
+   * Patrick Test
+   */
+  @type({ map: PlayerHand })
+  playersHand = new MapSchema<PlayerHand>();
+
+  constructor() {
+    super();
+
+    /**
+     * Patrick Test
+     */
+    const card = new Card(1, 'red', '1');
+
+    this.playersHand['MonPote'] = new PlayerHand();
+    this.playersHand['MonPote'].hand.push(card);
+    this.playersHand['MonPote'].allowedCards.push(card);
+  }
 }
