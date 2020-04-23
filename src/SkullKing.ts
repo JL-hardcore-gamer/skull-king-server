@@ -24,6 +24,75 @@ export class SkullKing extends Room<State> {
       this.state.roomOwner = options.nickname;
     }
 
+    // All the logic will be here
+
+    /**
+     * Useful for testing purpose
+     */
+    this.onMessage('TEST', (client, message) => {
+      console.log('message received:', message);
+      console.log('client:', client.auth.nickname);
+      console.log('client ID:', client.auth.ID);
+
+      const prettyPrint = (obj: any) => {
+        const allKeys = Object.keys(obj);
+
+        allKeys.forEach((key) => {
+          console.log(`Key ${key}:`, obj[key]);
+        });
+      };
+
+      prettyPrint(this.state.players);
+      // After setup the game the front-end can subscribe to
+      // [state.game.remainingRounds[0].playersHand['MonPote'].hand
+      // And display it
+
+      // console.log(
+      //   'MonPote hand first card friendlyName',
+      //   this.state.game.remainingRounds[0].playersHand['MonPote'].hand[0]
+      //     .friendlyName
+      // );
+
+      // tests
+      // console.log('game players', this.state.game.players);
+      // console.log('players', this.state.players);
+      // this.state.sortPlayers();
+
+      // Do something
+    });
+
+    this.onMessage('START_GAME', (client, message) => {
+      console.log('message received:', message);
+      console.log('client:', client.auth.nickname);
+      console.log('client ID:', client.auth.ID);
+      //
+      // Triggers when `GAME_STATE` message is sent.
+      //
+
+      // should I enforce that client id = room owner?
+
+      // this.state.game.start();
+
+      console.log('game', this.state.game);
+
+      this.broadcast('GAME_STATE', 'an action has been taken!');
+    });
+
+    /**
+     * /!\ Some part of the documentation is wrong for example `onMessage`.
+     * In the documentation they said you need to have a `type` but in
+     * the implementation the `type` is missing
+     * cf: https://docs.colyseus.io/server/room/#onmessage-type-callback
+     */
+    this.onMessage('*', (client: Client, message: any) => {
+      //
+      // Triggers when any other type of message is sent,
+      // excluding "action", which has its own specific handler defined above.
+      //
+
+      console.log(client.sessionId, 'sent', message);
+    });
+
     // To be removed once START_GAME is in effect
     // this.state.game.start();
   }
@@ -57,48 +126,6 @@ export class SkullKing extends Room<State> {
       user.nickname,
       user.email
     );
-  }
-
-  // When a client sends a message
-  onMessage(client: Client, message: any) {
-    console.log('message received:', message);
-    console.log('client:', client.auth.nickname);
-    console.log('client ID:', client.auth.ID);
-
-    if (message.type === 'TEST') {
-    }
-
-    if (message.type === 'START_GAME') {
-      // should I enforce that client id = room owner?
-
-      // this.state.game.start();
-
-      console.log('game', this.state.game);
-
-      const prettyPrint = (obj: any) => {
-        const allKeys = Object.keys(obj);
-
-        allKeys.forEach((key) => {
-          console.log(`Key ${key}:`, obj[key]);
-        });
-      };
-
-      prettyPrint(this.state.players);
-      // After setup the game the front-end can subscribe to
-      // [state.game.remainingRounds[0].playersHand['MonPote'].hand
-      // And display it
-
-      // console.log(
-      //   'MonPote hand first card friendlyName',
-      //   this.state.game.remainingRounds[0].playersHand['MonPote'].hand[0]
-      //     .friendlyName
-      // );
-
-      // tests
-      // console.log('game players', this.state.game.players);
-      // console.log('players', this.state.players);
-      // this.state.sortPlayers();
-    }
   }
 
   // When a client leaves the room
