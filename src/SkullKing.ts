@@ -2,13 +2,31 @@ import { Room, Client } from 'colyseus';
 import { State } from './State';
 import { Player } from './Player';
 import { Card } from './Card';
+import { Dispatcher, Command } from '@colyseus/command';
 const db = require('./db/database');
 
 const getRandom = (min: number, max: number) => {
   return Math.random() * (max - min) + min;
 };
 
+class OnJoinCommand extends Command<
+  State,
+  { nickname: string; email: string }
+> {
+  execute(obj: any) {
+    // this.state.players[sessionId] = new Player();
+
+    this.state.players[obj.nickname] = new Player(
+      getRandom(0, 1000),
+      obj.nickname,
+      obj.email
+    );
+  }
+}
+
 export class SkullKing extends Room<State> {
+  dispatcher = new Dispatcher(this);
+
   constructor() {
     super();
     this.maxClients = 6;
@@ -121,11 +139,10 @@ export class SkullKing extends Room<State> {
     // User is for the data retrieve by onAuth
     console.log(`${user.nickname} joined the room !`);
 
-    this.state.players[user.nickname] = new Player(
-      getRandom(0, 1000),
-      user.nickname,
-      user.email
-    );
+    this.dispatcher.dispatch(new OnJoinCommand(), {
+      nickname: user.nickname,
+      email: user.email,
+    });
   }
 
   // When a client leaves the room
