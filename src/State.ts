@@ -25,8 +25,8 @@ export class State extends Schema {
   roomOwner: string;
 
   // not working
-  // sortPlayers() {
-  //   let playerIDs:Array<Number> = this.players.keys();
-  //   console.log(playerIDs);
-  // }
+  sortPlayers() {
+    let playerIDs: Array<Number> = this.players.keys();
+    console.log(playerIDs);
+  }
 }

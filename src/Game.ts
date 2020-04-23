@@ -13,7 +13,7 @@ export class Game extends Schema {
   winners = new ArraySchema<Player>();
 
   @type('boolean')
-  isFinished: boolean;
+  isFinished = false;
 
   @type([Round])
   remainingRounds = new ArraySchema<Round>();
@@ -91,6 +91,7 @@ export class Game extends Schema {
       }
       return a;
     }
+
     shuffle(this.players);
   }
 
@@ -103,6 +104,6 @@ export class Game extends Schema {
      * Patrick Test
      */
 
-    this.remainingRounds.push(new Round());
+    this.remainingRounds.push(new Round(this.players));
   }
 }

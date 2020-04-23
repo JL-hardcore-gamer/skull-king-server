@@ -65,20 +65,34 @@ export class SkullKing extends Room<State> {
     console.log('client:', client.auth.nickname);
     console.log('client ID:', client.auth.ID);
 
+    if (message.type === 'TEST') {
+    }
+
     if (message.type === 'START_GAME') {
       // should I enforce that client id = room owner?
 
-      this.state.game.start();
+      // this.state.game.start();
 
+      console.log('game', this.state.game);
+
+      const prettyPrint = (obj: any) => {
+        const allKeys = Object.keys(obj);
+
+        allKeys.forEach((key) => {
+          console.log(`Key ${key}:`, obj[key]);
+        });
+      };
+
+      prettyPrint(this.state.players);
       // After setup the game the front-end can subscribe to
-      // state.game.remainingRounds[0].playersHand['MonPote'].hand
+      // [state.game.remainingRounds[0].playersHand['MonPote'].hand
       // And display it
 
-      console.log(
-        'MonPote hand first card friendlyName',
-        this.state.game.remainingRounds[0].playersHand['MonPote'].hand[0]
-          .friendlyName
-      );
+      // console.log(
+      //   'MonPote hand first card friendlyName',
+      //   this.state.game.remainingRounds[0].playersHand['MonPote'].hand[0]
+      //     .friendlyName
+      // );
 
       // tests
       // console.log('game players', this.state.game.players);

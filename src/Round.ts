@@ -37,7 +37,7 @@ export class Round extends Schema {
   @type({ map: PlayerHand })
   playersHand = new MapSchema<PlayerHand>();
 
-  constructor() {
+  constructor(players: any) {
     super();
 
     /**
