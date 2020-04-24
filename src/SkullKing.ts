@@ -1,7 +1,7 @@
 import { Room, Client } from 'colyseus';
 import { State } from './State';
 import { Dispatcher } from '@colyseus/command';
-import { OnJoinCommand } from './Actions';
+import { OnJoinCommand, OnStartCommand } from './Actions';
 const db = require('./db/database');
 
 export class SkullKing extends Room<State> {
@@ -65,7 +65,11 @@ export class SkullKing extends Room<State> {
 
       // should I enforce that client id = room owner?
 
-      this.state.game.start(this.state.players);
+      // this.state.game.start(this.state.players);
+
+      this.dispatcher.dispatch(new OnStartCommand(), {
+        players: this.state.players
+      });
 
       console.log('players: ', this.state.game.orderedPlayers);
 
