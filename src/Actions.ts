@@ -24,12 +24,12 @@ export class OnJoinCommand extends Command<
 
 export class OnStartCommand extends Command<
   State,
-  { players: MapSchema<Player> }
+  { }
 > {
-  startGame(players: MapSchema<Player>) {
+  startGame() {
     this.createDeck();
     this.shuffleDeck();
-    this.shufflePlayers(players);
+    this.shufflePlayers(this.state.players);
 
     /* Pour Patrick */
     this.state.game.remainingRounds.push(new Round(this.state.game.orderedPlayers));
@@ -107,6 +107,6 @@ export class OnStartCommand extends Command<
 
   execute(obj: any) {
     // this.state.game.start(obj.players);
-    this.startGame(obj.players);
+    this.startGame();
   };
 }
