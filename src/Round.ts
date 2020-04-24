@@ -37,16 +37,19 @@ export class Round extends Schema {
   @type({ map: PlayerHand })
   playersHand = new MapSchema<PlayerHand>();
 
-  constructor(players: any) {
+  constructor(id:number, startingPlayer:number) {
     super();
+
+    this.id = id;
+    this.startingPlayer = startingPlayer;
 
     /**
      * Patrick Test
      */
-    const card = new Card(1, 'red', '1');
+    // const card = new Card(1, 'red', '1');
 
-    this.playersHand['MonPote'] = new PlayerHand();
-    this.playersHand['MonPote'].hand.push(card);
-    this.playersHand['MonPote'].allowedCards.push(card);
+    // this.playersHand['MonPote'] = new PlayerHand();
+    // this.playersHand['MonPote'].hand.push(card);
+    // this.playersHand['MonPote'].allowedCards.push(card);
   }
 }

@@ -23,7 +23,7 @@ export class Game extends Schema {
 
   // difference with State.players: only focuses on ID order, not on the whole player info
   @type(['number'])
-  orderedPlayers = new ArraySchema<Number>();
+  orderedPlayers = new ArraySchema<number>();
 
   @type([Card])
   deck = new ArraySchema<Card>();

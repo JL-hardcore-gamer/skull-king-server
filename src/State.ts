@@ -23,10 +23,4 @@ export class State extends Schema {
 
   @type('string')
   roomOwner: string;
-
-  // not working
-  // sortPlayers() {
-  //   let playerIDs: Array<Number> = this.players.keys();
-  //   console.log(playerIDs);
-  // }
 }

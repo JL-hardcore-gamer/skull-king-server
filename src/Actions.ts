@@ -1,7 +1,7 @@
 import { State } from './State';
 import { Player } from './Player';
 import { Card } from './Card';
-import { Schema, MapSchema } from '@colyseus/schema';
+import { Schema, ArraySchema, MapSchema } from '@colyseus/schema';
 import { Command } from '@colyseus/command';
 import { Round } from './Round';
 
@@ -22,17 +22,12 @@ export class OnJoinCommand extends Command<
   }
 }
 
-export class OnStartCommand extends Command<
-  State,
-  { }
-> {
+export class OnStartCommand extends Command<State, {}> {
   startGame() {
     this.createDeck();
     this.shuffleDeck();
     this.shufflePlayers(this.state.players);
-
-    /* Pour Patrick */
-    this.state.game.remainingRounds.push(new Round(this.state.game.orderedPlayers));
+    this.setupRounds();
   }
 
   createDeck() {
@@ -104,9 +99,21 @@ export class OnStartCommand extends Command<
     shuffle(this.state.game.orderedPlayers);
   }
 
+  setupRounds() {
+    let roundID:number = 1;
+    const orderedPlayers:ArraySchema<number> = this.state.game.orderedPlayers;
+    let i:number;
+    let round:Round;
+
+    for (roundID; roundID <= 10; roundID += 1) {
+      i = (roundID - 1) % orderedPlayers.length;
+      round = new Round(roundID, orderedPlayers[i]);
+      this.state.game.remainingRounds.push(round);      
+    }
+    
+  }
 
   execute(obj: any) {
-    // this.state.game.start(obj.players);
     this.startGame();
   };
 }
