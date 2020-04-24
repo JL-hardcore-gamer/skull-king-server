@@ -21,9 +21,9 @@ export class Game extends Schema {
   @type({ map: PlayerGameScore })
   scoreboard = new MapSchema<PlayerGameScore>();
 
-  // competes with State.players, should probably be removed
-  @type([Player])
-  players = new ArraySchema<Player>();
+  // difference with State.players: only focuses on ID order, not on the whole player info
+  @type(['number'])
+  orderedPlayers = new ArraySchema<Number>();
 
   @type([Card])
   deck = new ArraySchema<Card>();
@@ -81,10 +81,8 @@ export class Game extends Schema {
     shuffle(this.deck);
   }
 
-  shufflePlayers() {
-    // i don't know how to avoid the repetition of the shuffle method :(
-    // (because I need to strongly type the array's content)
-    function shuffle(a: Array<Player>) {
+  shufflePlayers(players: MapSchema<Player>) {
+    function shuffle(a: Array<Number>) {
       for (let i = a.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [a[i], a[j]] = [a[j], a[i]];
@@ -92,18 +90,22 @@ export class Game extends Schema {
       return a;
     }
 
-    shuffle(this.players);
+    Object.keys(players).forEach(id => {
+      this.orderedPlayers.push(Number(id));
+    })
+
+    shuffle(this.orderedPlayers);
   }
 
-  start() {
+  start(players: MapSchema<Player>) {
     this.createDeck();
     this.shuffleDeck();
-    this.shufflePlayers();
+    this.shufflePlayers(players);
 
     /**
      * Patrick Test
      */
 
-    this.remainingRounds.push(new Round(this.players));
+    this.remainingRounds.push(new Round(this.orderedPlayers));
   }
 }
