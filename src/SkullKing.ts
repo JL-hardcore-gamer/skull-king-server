@@ -41,6 +41,8 @@ export class SkullKing extends Room<State> {
         });
       };
 
+      this.dispatcher.dispatch(new OnStartCommand(), {});
+
       // prettyPrint(this.state.game.orderedPlayers);
 
       // prettyPrint(this.state.players);

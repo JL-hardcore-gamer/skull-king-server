@@ -4,6 +4,7 @@ import { Card } from './Card';
 import { Schema, ArraySchema, MapSchema } from '@colyseus/schema';
 import { Command } from '@colyseus/command';
 import { Round } from './Round';
+import { PlayerHand } from './PlayerHand';
 
 // const getRandom = (min: number, max: number) => {
 //   return Math.random() * (max - min) + min;
@@ -107,10 +108,14 @@ export class OnStartCommand extends Command<State, {}> {
 
     for (roundID; roundID <= 10; roundID += 1) {
       i = (roundID - 1) % orderedPlayers.length;
-      round = new Round(roundID, orderedPlayers[i]);
+      round = new Round(roundID, orderedPlayers[i], orderedPlayers);
       this.state.game.remainingRounds.push(round);      
-    }
-    
+    }    
+  }
+
+  // à implémenter une fois la playerHand setup
+  dealCards(numberOfCards:number) {
+
   }
 
   execute(obj: any) {
