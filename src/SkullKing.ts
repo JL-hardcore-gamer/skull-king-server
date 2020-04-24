@@ -1,6 +1,6 @@
 import { Room, Client } from 'colyseus';
 import { State } from './State';
-import { Dispatcher, Command } from '@colyseus/command';
+import { Dispatcher } from '@colyseus/command';
 import { OnJoinCommand } from './Actions';
 const db = require('./db/database');
 
@@ -53,13 +53,6 @@ export class SkullKing extends Room<State> {
       //   this.state.game.remainingRounds[0].playersHand['MonPote'].hand[0]
       //     .friendlyName
       // );
-
-      // tests
-      // console.log('game players', this.state.game.players);
-      // console.log('players', this.state.players);
-      // this.state.sortPlayers();
-
-      // Do something
     });
 
     this.onMessage('START_GAME', (client, message) => {
@@ -72,9 +65,9 @@ export class SkullKing extends Room<State> {
 
       // should I enforce that client id = room owner?
 
-      this.state.game.start();
+      this.state.game.start(this.state.players);
 
-      console.log('game', this.state.game);
+      console.log('players: ', this.state.game.orderedPlayers);
 
       this.broadcast('GAME_STATE', 'an action has been taken!');
     });
@@ -123,6 +116,7 @@ export class SkullKing extends Room<State> {
     console.log(`${user.nickname} joined the room !`);
 
     this.dispatcher.dispatch(new OnJoinCommand(), {
+      id: user.ID,
       nickname: user.nickname,
       email: user.email,
     });
