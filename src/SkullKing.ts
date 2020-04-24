@@ -76,6 +76,12 @@ export class SkullKing extends Room<State> {
       this.broadcast('GAME_STATE', 'an action has been taken!');
     });
 
+    this.onMessage('BET', (client, message) => {
+      console.log(`${client.auth.nickname} bet ${message.value}`);
+
+      // Do something
+    });
+
     /**
      * /!\ Some part of the documentation is wrong for example `onMessage`.
      * In the documentation they said you need to have a `type` but in
