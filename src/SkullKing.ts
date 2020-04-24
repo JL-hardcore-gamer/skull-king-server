@@ -1,5 +1,6 @@
 import { Room, Client } from 'colyseus';
 import { State } from './State';
+import { Card } from './Card';
 import { Dispatcher } from '@colyseus/command';
 import { OnJoinCommand, OnStartCommand } from './Actions';
 const db = require('./db/database');
@@ -31,7 +32,7 @@ export class SkullKing extends Room<State> {
       console.log('message received:', message);
       console.log('client:', client.auth.nickname);
       console.log('client ID:', client.auth.ID);
-      // console.log('player array:', this.state.game.orderedPlayers);
+      console.log('player array:', this.state.game.orderedPlayers);
 
       const prettyPrint = (obj: any) => {
         const allKeys = Object.keys(obj);
@@ -42,19 +43,6 @@ export class SkullKing extends Room<State> {
       };
 
       this.dispatcher.dispatch(new OnStartCommand(), {});
-
-      // prettyPrint(this.state.game.orderedPlayers);
-
-      // prettyPrint(this.state.players);
-      // After setup the game the front-end can subscribe to
-      // [state.game.remainingRounds[0].playersHand['MonPote'].hand
-      // And display it
-
-      // console.log(
-      //   'MonPote hand first card friendlyName',
-      //   this.state.game.remainingRounds[0].playersHand['MonPote'].hand[0]
-      //     .friendlyName
-      // );
     });
 
     this.onMessage('START_GAME', (client, message) => {

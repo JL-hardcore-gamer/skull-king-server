@@ -29,6 +29,7 @@ export class OnStartCommand extends Command<State, {}> {
     this.shuffleDeck();
     this.shufflePlayers(this.state.players);
     this.setupRounds();
+    this.dealCards(1);
   }
 
   createDeck() {
@@ -113,9 +114,16 @@ export class OnStartCommand extends Command<State, {}> {
     }    
   }
 
-  // à implémenter une fois la playerHand setup
   dealCards(numberOfCards:number) {
+    let deck:Array<Card> = this.state.game.deck.slice();
+    let players:Array<number> = this.state.game.orderedPlayers;
+    const round:Round = this.state.game.remainingRounds[0] // à changer pour currentRound
 
+    for (numberOfCards; numberOfCards > 0; numberOfCards -= 1) {
+      players.forEach(id => {
+        round.playersHand[id].hand.push(deck.shift());
+      });
+    }
   }
 
   execute(obj: any) {
