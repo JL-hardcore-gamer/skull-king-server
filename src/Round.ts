@@ -24,37 +24,16 @@ export class Round extends Schema {
   @type({ map: PlayerRoundScore })
   playersScore = new MapSchema<PlayerRoundScore>();
 
-  // @type(PlayerHand)
-  // player1Hand: PlayerHand;
-
-  // @type(PlayerHand)
-  // player2Hand: PlayerHand;
-  // repeat as many times as there are players
-
   /**
    * Patrick Test
    */
   @type({ map: PlayerHand })
   playersHand = new MapSchema<PlayerHand>();
 
-  constructor(id:number, startingPlayer:number, players:Array<number>) {
+  constructor(id: number, startingPlayer: number, players: Array<number>) {
     super();
 
     this.id = id;
     this.startingPlayer = startingPlayer;
-
-    players.forEach(id => {
-      this.playersHand[id] = new PlayerHand();
-      this.playersHand[id].hand.push(new Card(1, 'red', '1')); // test
-    });
-
-    /**
-     * Patrick Test
-     */
-    // const card = new Card(1, 'red', '1');
-
-    // this.playersHand['MonPote'] = new PlayerHand();
-    // this.playersHand['MonPote'].hand.push(card);
-    // this.playersHand['MonPote'].allowedCards.push(card);
   }
 }

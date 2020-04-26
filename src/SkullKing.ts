@@ -34,14 +34,6 @@ export class SkullKing extends Room<State> {
       console.log('client ID:', client.auth.ID);
       console.log('player array:', this.state.game.orderedPlayers);
 
-      const prettyPrint = (obj: any) => {
-        const allKeys = Object.keys(obj);
-
-        allKeys.forEach((key) => {
-          console.log(`Key ${key}:`, obj[key]);
-        });
-      };
-
       this.dispatcher.dispatch(new OnStartCommand(), {});
     });
 
@@ -49,23 +41,8 @@ export class SkullKing extends Room<State> {
       console.log('message received:', message);
       console.log('client:', client.auth.nickname);
       console.log('client ID:', client.auth.ID);
-      //
-      // Triggers when `GAME_STATE` message is sent.
-      //
 
       this.dispatcher.dispatch(new OnStartCommand(), {});
-
-
-      // console.log('players: ', this.state.game.orderedPlayers);
-      // console.log('round 1: ', this.state.game.remainingRounds[0].id);
-      // console.log('round 1: ', this.state.game.remainingRounds[0].startingPlayer);
-      // console.log('round 2: ', this.state.game.remainingRounds[1].id);
-      // console.log('round 2: ', this.state.game.remainingRounds[1].startingPlayer);
-      // console.log('round 3: ', this.state.game.remainingRounds[2].startingPlayer);
-      // console.log('round 4: ', this.state.game.remainingRounds[3].startingPlayer);
-      // console.log('round 5: ', this.state.game.remainingRounds[4].startingPlayer);
-      // console.log('round 6: ', this.state.game.remainingRounds[5].startingPlayer);
-      // console.log('round 7: ', this.state.game.remainingRounds[6].startingPlayer);
 
       this.broadcast('GAME_STATE', 'an action has been taken!');
     });
@@ -90,9 +67,6 @@ export class SkullKing extends Room<State> {
 
       console.log(client.sessionId, 'sent', message);
     });
-
-    // To be removed once START_GAME is in effect
-    // this.state.game.start();
   }
 
   async onAuth(client: any, options: any) {

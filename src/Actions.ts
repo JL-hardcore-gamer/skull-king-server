@@ -8,18 +8,14 @@ import { PlayerHand } from './PlayerHand';
 
 // const getRandom = (min: number, max: number) => {
 //   return Math.random() * (max - min) + min;
-// };  
+// };
 
 export class OnJoinCommand extends Command<
   State,
-  { id: number, nickname: string; email: string }
+  { id: number; nickname: string; email: string }
 > {
   execute(obj: any) {
-    this.state.players[obj.id] = new Player(
-      obj.id,
-      obj.nickname,
-      obj.email
-    );
+    this.state.players[obj.id] = new Player(obj.id, obj.nickname, obj.email);
   }
 }
 
@@ -94,33 +90,33 @@ export class OnStartCommand extends Command<State, {}> {
       return a;
     }
 
-    Object.keys(players).forEach(id => {
+    Object.keys(players).forEach((id) => {
       this.state.game.orderedPlayers.push(Number(id));
-    })
+    });
 
     shuffle(this.state.game.orderedPlayers);
   }
 
   setupRounds() {
-    let roundID:number = 1;
-    const orderedPlayers:ArraySchema<number> = this.state.game.orderedPlayers;
-    let i:number;
-    let round:Round;
+    let roundID: number = 1;
+    const orderedPlayers: ArraySchema<number> = this.state.game.orderedPlayers;
+    let i: number;
+    let round: Round;
 
     for (roundID; roundID <= 10; roundID += 1) {
       i = (roundID - 1) % orderedPlayers.length;
       round = new Round(roundID, orderedPlayers[i], orderedPlayers);
-      this.state.game.remainingRounds.push(round);      
-    }    
+      this.state.game.remainingRounds.push(round);
+    }
   }
 
-  dealCards(numberOfCards:number) {
-    let deck:Array<Card> = this.state.game.deck.slice();
-    let players:Array<number> = this.state.game.orderedPlayers;
-    const round:Round = this.state.game.remainingRounds[0] // à changer pour currentRound
+  dealCards(numberOfCards: number) {
+    let deck: Array<Card> = this.state.game.deck.slice();
+    let players: Array<number> = this.state.game.orderedPlayers;
+    const round: Round = this.state.game.remainingRounds[0]; // à changer pour currentRound
 
     for (numberOfCards; numberOfCards > 0; numberOfCards -= 1) {
-      players.forEach(id => {
+      players.forEach((id) => {
         round.playersHand[id].hand.push(deck.shift());
       });
     }
@@ -128,5 +124,5 @@ export class OnStartCommand extends Command<State, {}> {
 
   execute(obj: any) {
     this.startGame();
-  };
+  }
 }
