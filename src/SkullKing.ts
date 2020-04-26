@@ -42,6 +42,8 @@ export class SkullKing extends Room<State> {
       console.log('client:', client.auth.nickname);
       console.log('client ID:', client.auth.ID);
 
+      this.broadcast('GAME_STARTED', `${client.auth.nickname} start the game`);
+
       this.dispatcher.dispatch(new OnStartCommand(), {});
 
       this.broadcast('GAME_STATE', 'an action has been taken!');
