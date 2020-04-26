@@ -7,6 +7,9 @@ export class Round extends Schema {
   @type('number')
   id: number;
 
+  /**
+   * Not sure we want this to be an number actually
+   */
   @type('number')
   startingPlayer: number;
   // first player of the round, depends on the game order
@@ -15,9 +18,13 @@ export class Round extends Schema {
   firstPlayer: number;
   // first player of the trick (except first trick), depends on the last trick winner
 
+  /**
+   * Probably useless
+   */
   @type([Card])
   deckCards = new ArraySchema<Card>();
 
+  // Not sure it's the right place
   @type('number')
   remainingTricks: number;
 
@@ -30,10 +37,15 @@ export class Round extends Schema {
   @type({ map: PlayerHand })
   playersHand = new MapSchema<PlayerHand>();
 
-  constructor(id: number, startingPlayer: number, players: Array<number>) {
+  constructor(
+    id: number,
+    startingPlayer: number,
+    playersHand: MapSchema<PlayerHand> = new MapSchema<PlayerHand>()
+  ) {
     super();
 
     this.id = id;
     this.startingPlayer = startingPlayer;
+    this.playersHand = playersHand;
   }
 }

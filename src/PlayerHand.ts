@@ -8,4 +8,9 @@ export class PlayerHand extends Schema {
 
   @type([Card])
   allowedCards = new ArraySchema<Card>();
+
+  constructor(hand: ArraySchema<Card> = new ArraySchema<Card>()) {
+    super();
+    this.hand = hand;
+  }
 }

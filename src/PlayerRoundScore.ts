@@ -5,11 +5,11 @@ export class PlayerRoundScore extends Schema {
   tricksBet: number;
 
   @type('number')
-  tricksWon: number;
+  tricksWon: number = 0;
 
   @type('number')
-  skullKingCaptured: number;
+  skullKingCaptured: number = 0;
 
   @type('number')
-  piratesCaptured: number;
+  piratesCaptured: number = 0;
 }
