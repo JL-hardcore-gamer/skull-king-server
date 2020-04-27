@@ -2,8 +2,12 @@ import { Room, Client } from 'colyseus';
 import { State } from './State';
 import { Card } from './Card';
 import { Dispatcher } from '@colyseus/command';
-import { OnJoinCommand, OnStartCommand, OnCardReceivedCommand } from './Actions';
 import { prettyPrintObj } from './utils';
+import {
+  OnJoinCommand,
+  OnStartCommand,
+  OnCardReceivedCommand,
+} from './Actions';
 const db = require('./db/database');
 
 export class SkullKing extends Room<State> {
@@ -44,10 +48,15 @@ export class SkullKing extends Room<State> {
       console.log('client ID:', client.auth.ID);
 
       this.broadcast('GAME_STARTED', `${client.auth.nickname} start the game`);
+      this.broadcast('TOP_MESSAGE', `Préparation de la partie`);
 
       this.dispatcher.dispatch(new OnStartCommand(), {});
 
-      this.broadcast('GAME_STATE', 'an action has been taken!');
+      // Need to add a delay otherwise we do not have time to see the first message
+      this.broadcast('START_BETTING', {
+        maxBet: 1,
+        topMessage: 'Pari entre 0 et 1',
+      });
     });
 
     this.onMessage('BET', (client, message) => {

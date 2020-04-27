@@ -63,7 +63,7 @@ export class OnStartCommand extends Command<State, {}> {
       ...shuffledPlayersId,
       ...shuffledPlayersId,
       ...shuffledPlayersId,
-      ...shuffledPlayersId
+      ...shuffledPlayersId,
     ];
     /**
      * Create 10 rounds
@@ -104,6 +104,10 @@ export class OnStartCommand extends Command<State, {}> {
 
       // /!\ TODO Must be created dynamically by the round
       this.state.currentTrick = new Trick(1, 1);
+    }
+
+    if (this.state.game.remainingRounds.length > 0) {
+      this.state.currentRound = this.state.game.remainingRounds[0].id;
     }
   }
 
