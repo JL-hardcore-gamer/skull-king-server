@@ -80,6 +80,7 @@ export class SkullKing extends Room<State> {
 
       console.log(message.value);
       console.log(`${client.auth.nickname} a joué ${this.state.currentTrick.cardsPlayed[client.auth.ID].friendlyName}`);
+      console.log("The suit is: ", this.state.currentTrick.suit);
     });
 
     /**

@@ -118,7 +118,7 @@ export class OnCardReceivedCommand extends Command<
 {
   removeCardFromPlayerHand(playerId:number, cardId:number) {
     // what it should be
-    // const round = this.state.currentRound;
+    // const round = this.state.remainingRounds[currentRound];
 
     const round = this.state.game.remainingRounds[0];
     const hand = round.playersHand[playerId].hand;
@@ -133,17 +133,27 @@ export class OnCardReceivedCommand extends Command<
     hand.splice(i, 1);
   };
 
-  addCardtoCardsPlayed(playerId:number, cardId:number) {
+  addCardtoCardsPlayed(playerId:number, card:Card) {
     const cardsPlayed = this.state.currentTrick.cardsPlayed; 
-    // Why can't I use the utils deck variable that's exported here?
-    const deck = createDeck();
-    const card = deck[cardId - 1]; // because cards ID start at 1 rather than 0
-
     cardsPlayed[playerId] = card;
   }
 
+  defineTrickSuit(card:Card) {
+    if (card.suit === "special") { 
+      return 
+    } else {
+      this.state.currentTrick.suit = card.suit
+    };
+  }
+
   execute(obj: any) {
+    const deck = createDeck();
+    const card = deck[obj.cardId - 1]; // because cards ID start at 1 rather than 0
+    const trick = this.state.currentTrick;
+    let suit = trick.suit;
+
     this.removeCardFromPlayerHand(obj.playerId, obj.cardId);
-    this.addCardtoCardsPlayed(obj.playerId, obj.cardId);
+    this.addCardtoCardsPlayed(obj.playerId, card);
+    if (!suit) this.defineTrickSuit(card);
   }
 }
