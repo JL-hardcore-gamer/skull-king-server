@@ -63,4 +63,4 @@ const createDeck = (): Array<Card> => {
 
 const deck = createDeck();
 
-export { prettyPrintObj, shuffleArray, deck };
+export { prettyPrintObj, shuffleArray, deck, createDeck };

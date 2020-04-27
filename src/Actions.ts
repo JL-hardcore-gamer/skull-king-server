@@ -5,7 +5,8 @@ import { Schema, ArraySchema, MapSchema } from '@colyseus/schema';
 import { Command } from '@colyseus/command';
 import { Round } from './Round';
 import { PlayerHand } from './PlayerHand';
-import { shuffleArray, deck, prettyPrintObj } from './utils';
+import { shuffleArray, deck, prettyPrintObj, createDeck } from './utils';
+import { Trick } from './Trick';
 
 export class OnJoinCommand extends Command<
   State,
@@ -100,6 +101,9 @@ export class OnStartCommand extends Command<State, {}> {
       );
 
       this.state.game.remainingRounds.push(newRound);
+
+      // /!\ TODO Must be created dynamically by the round
+      this.state.currentTrick = new Trick(1, 1);
     }
   }
 
@@ -117,7 +121,7 @@ export class OnCardReceivedCommand extends Command<
     // const round = this.state.currentRound;
 
     const round = this.state.game.remainingRounds[0];
-    let hand = round.playersHand[playerId].hand;
+    const hand = round.playersHand[playerId].hand;
     let card:Card;
     let i = 0
 
@@ -129,8 +133,17 @@ export class OnCardReceivedCommand extends Command<
     hand.splice(i, 1);
   };
 
+  addCardtoCardsPlayed(playerId:number, cardId:number) {
+    const cardsPlayed = this.state.currentTrick.cardsPlayed; 
+    // Why can't I use the utils deck variable that's exported here?
+    const deck = createDeck();
+    const card = deck[cardId - 1]; // because cards ID start at 1 rather than 0
+
+    cardsPlayed[playerId] = card;
+  }
 
   execute(obj: any) {
     this.removeCardFromPlayerHand(obj.playerId, obj.cardId);
+    this.addCardtoCardsPlayed(obj.playerId, obj.cardId);
   }
 }

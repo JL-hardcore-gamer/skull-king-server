@@ -79,7 +79,7 @@ export class SkullKing extends Room<State> {
       });
 
       console.log(message.value);
-      console.log(`${client.auth.nickname} played ${message.value}`);
+      console.log(`${client.auth.nickname} a joué ${this.state.currentTrick.cardsPlayed[client.auth.ID].friendlyName}`);
     });
 
     /**
