@@ -15,8 +15,8 @@ export class State extends Schema {
   @type(Trick)
   currentTrick: Trick;
 
-  @type(Round)
-  currentRound: Round;
+  @type('number')
+  currentRound: number;
 
   @type(Game)
   game = new Game();
