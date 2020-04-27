@@ -33,12 +33,16 @@ export class Round extends Schema {
   constructor(
     id: number,
     startingPlayer: number,
-    playersHand: MapSchema<PlayerHand> = new MapSchema<PlayerHand>()
+    playersHand: MapSchema<PlayerHand> = new MapSchema<PlayerHand>(),
+    playersScore: MapSchema<PlayerRoundScore> = new MapSchema<
+      PlayerRoundScore
+    >()
   ) {
     super();
 
     this.id = id;
     this.startingPlayer = startingPlayer;
     this.playersHand = playersHand;
+    this.playersScore = playersScore;
   }
 }

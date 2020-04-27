@@ -61,12 +61,8 @@ export class SkullKing extends Room<State> {
     });
 
     this.onMessage('BET', (client, message) => {
-      console.log(`${client.auth.nickname} bet ${message.value}`);
-
-      const playersCount = this.state.players.length + 1;
-      const player = this.state.players.find(
-        (player: Player) => player.name === client.auth.nickname
-      );
+      const playersCount = Object.keys(this.state.players).length;
+      const player = this.state.players[client.auth.ID];
 
       // Change player's bet in Round -> Score
       if (player) {
@@ -106,9 +102,9 @@ export class SkullKing extends Room<State> {
       // -- if it is, compute winner
       // -- & go to next trick
 
-      console.log("Players: ");
+      console.log('Players: ');
       prettyPrintObj(this.state.game.orderedPlayers);
-      console.log("Current: ", this.state.currentTrick.currentPlayer);
+      console.log('Current: ', this.state.currentTrick.currentPlayer);
 
       this.dispatcher.dispatch(new OnCardReceivedCommand(), {
         playerId: client.auth.ID,
@@ -116,9 +112,13 @@ export class SkullKing extends Room<State> {
       });
 
       console.log(message.value);
-      console.log(`${client.auth.nickname} a joué ${this.state.currentTrick.cardsPlayed[client.auth.ID].friendlyName}`);
-      console.log("The suit is: ", this.state.currentTrick.suit);
-      console.log("Current: ", this.state.currentTrick.currentPlayer);
+      console.log(
+        `${client.auth.nickname} a joué ${
+          this.state.currentTrick.cardsPlayed[client.auth.ID].friendlyName
+        }`
+      );
+      console.log('The suit is: ', this.state.currentTrick.suit);
+      console.log('Current: ', this.state.currentTrick.currentPlayer);
     });
 
     /**

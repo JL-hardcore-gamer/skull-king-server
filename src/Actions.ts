@@ -7,6 +7,7 @@ import { Round } from './Round';
 import { PlayerHand } from './PlayerHand';
 import { shuffleArray, deck, prettyPrintObj, createDeck } from './utils';
 import { Trick } from './Trick';
+import { PlayerRoundScore } from './PlayerRoundScore';
 
 export class OnJoinCommand extends Command<
   State,
@@ -75,15 +76,17 @@ export class OnStartCommand extends Command<State, {}> {
       prevDeck = newShuffledDeck;
 
       let playersHand = new MapSchema<PlayerHand>();
+      let playersScore = new MapSchema<PlayerRoundScore>();
       /**
        * TODO : Need to improve
        * /!\ Complex part of the code
        * Deal cards to all players
        */
       playersId.forEach((playerId) => {
-        // Create a PlayerHand object otherwise
+        // Create a PlayerHand and PlayerRoundScore object otherwise
         // it's not possible have access to the player hand field.
         playersHand[playerId] = new PlayerHand();
+        playersScore[playerId] = new PlayerRoundScore();
         let nbOfCardToDeal = roundId + 1;
         for (nbOfCardToDeal; nbOfCardToDeal > 0; --nbOfCardToDeal) {
           playersHand[playerId].hand.push(newShuffledDeck.shift());
@@ -97,7 +100,8 @@ export class OnStartCommand extends Command<State, {}> {
         // This should not be a int because an object key is always
         // a string anyway
         parseInt(roundStartingPlayer, 10),
-        playersHand
+        playersHand,
+        playersScore
       );
 
       this.state.game.remainingRounds.push(newRound);
@@ -121,48 +125,48 @@ export class OnStartCommand extends Command<State, {}> {
 }
 
 export class OnCardReceivedCommand extends Command<
-  State, { playerId:number, cardId:number }
-> 
-{
-  removeCardFromPlayerHand(playerId:number, cardId:number) {
+  State,
+  { playerId: number; cardId: number }
+> {
+  removeCardFromPlayerHand(playerId: number, cardId: number) {
     // what it should be
     // const round = this.state.remainingRounds[currentRound];
 
     const round = this.state.game.remainingRounds[0];
     const hand = round.playersHand[playerId].hand;
-    let card:Card;
-    let i = 0
+    let card: Card;
+    let i = 0;
 
     for (; i < hand.length; i += 1) {
-      card = hand[i];      
+      card = hand[i];
       if (cardId === card.id) return;
     }
 
     hand.splice(i, 1);
-  };
+  }
 
-  addCardtoCardsPlayed(playerId:number, card:Card) {
-    const cardsPlayed = this.state.currentTrick.cardsPlayed; 
+  addCardtoCardsPlayed(playerId: number, card: Card) {
+    const cardsPlayed = this.state.currentTrick.cardsPlayed;
     cardsPlayed[playerId] = card;
   }
 
-  defineTrickSuit(card:Card) {
-    if (card.suit === "special") { 
-      return 
+  defineTrickSuit(card: Card) {
+    if (card.suit === 'special') {
+      return;
     } else {
-      this.state.currentTrick.suit = card.suit
-    };
+      this.state.currentTrick.suit = card.suit;
+    }
   }
 
   // /!\ doesn't seem to change currentTrick.currentPlayer
-  computeNextPlayer(playerId:number, playerOrder:number[]) {
+  computeNextPlayer(playerId: number, playerOrder: number[]) {
     const id = playerOrder.indexOf(playerId);
     const newPlayerId = (id + 1) % playerOrder.length;
     let newPlayer = playerOrder[newPlayerId];
     this.state.currentTrick.currentPlayer = newPlayer;
   }
 
-  trickHasEnded(playerOrder:number[]) {
+  trickHasEnded(playerOrder: number[]) {
     const cardsPlayed = this.state.currentTrick.cardsPlayed;
     const numberOfCardsPlayed = Object.keys(cardsPlayed).length;
     return playerOrder.length === numberOfCardsPlayed;
