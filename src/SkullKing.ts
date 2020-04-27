@@ -52,6 +52,13 @@ export class SkullKing extends Room<State> {
     this.onMessage('BET', (client, message) => {
       console.log(`${client.auth.nickname} bet ${message.value}`);
 
+      // Increase Round nb of bet
+
+      // Change player's bet in Round -> Score
+
+      // If nbOfbet == nbOfPlayer
+      // -> Broadcast
+
       // Do something
     });
 

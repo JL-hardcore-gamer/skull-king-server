@@ -17,14 +17,6 @@ export class OnJoinCommand extends Command<
 }
 
 export class OnStartCommand extends Command<State, {}> {
-  // startGame() {
-  // this.createDeck();
-  // this.shuffleDeck();
-  // this.shufflePlayers(this.state.players);
-  // this.setupRounds();
-  // this.dealCards(1);
-  // }
-
   /**
    * The purpose of this function is to create all the Round
    * A Round is :
@@ -102,7 +94,7 @@ export class OnStartCommand extends Command<State, {}> {
         roundId,
         // This should not be a int because an object key is always
         // a string anyway
-        parseInt(roundStartingPlayer),
+        parseInt(roundStartingPlayer, 10),
         playersHand
       );
 
@@ -154,60 +146,6 @@ export class OnStartCommand extends Command<State, {}> {
       }
     }
   }
-
-  // shuffleDeck() {
-  //   function shuffle(a: Array<Card>) {
-  //     for (let i = a.length - 1; i > 0; i--) {
-  //       const j = Math.floor(Math.random() * (i + 1));
-  //       [a[i], a[j]] = [a[j], a[i]];
-  //     }
-  //     return a;
-  //   }
-  //   shuffle(this.state.game.deck);
-  // }
-
-  // shufflePlayers(players: MapSchema<Player>) {
-  //   function shuffle(a: Array<Number>) {
-  //     for (let i = a.length - 1; i > 0; i--) {
-  //       const j = Math.floor(Math.random() * (i + 1));
-  //       [a[i], a[j]] = [a[j], a[i]];
-  //     }
-  //     return a;
-  //   }
-
-  //   Object.keys(players).forEach((id) => {
-  //     this.state.game.orderedPlayers.push(Number(id));
-  //   });
-
-  //   shuffle(this.state.game.orderedPlayers);
-  // }
-
-  // setupRounds() {
-  //   let roundID: number = 1;
-  //   const orderedPlayers: ArraySchema<number> = this.state.game.orderedPlayers;
-  //   let i: number;
-  //   let round: Round;
-
-  //   for (roundID; roundID <= 10; roundID += 1) {
-  //     i = (roundID - 1) % orderedPlayers.length;
-  //     // round = new Round(roundID, orderedPlayers[i], orderedPlayers);
-  //     console.log('====== prettyPrintObj round ==== ');
-  //     prettyPrintObj(round);
-  //     this.state.game.remainingRounds.push(round);
-  //   }
-  // }
-
-  // dealCards(numberOfCards: number) {
-  //   let deck: Array<Card> = this.state.game.deck.slice();
-  //   let players: Array<number> = this.state.game.orderedPlayers;
-  //   const round: Round = this.state.game.remainingRounds[0]; // à changer pour currentRound
-
-  //   for (numberOfCards; numberOfCards > 0; numberOfCards -= 1) {
-  //     players.forEach((id) => {
-  //       round.playersHand[id].hand.push(deck.shift());
-  //     });
-  //   }
-  // }
 
   execute(obj: any) {
     /**
