@@ -5,7 +5,8 @@ import { Schema, ArraySchema, MapSchema } from '@colyseus/schema';
 import { Command } from '@colyseus/command';
 import { Round } from './Round';
 import { PlayerHand } from './PlayerHand';
-import { shuffleArray, deck, prettyPrintObj } from './utils';
+import { shuffleArray, deck, prettyPrintObj, createDeck } from './utils';
+import { Trick } from './Trick';
 
 export class OnJoinCommand extends Command<
   State,
@@ -100,6 +101,13 @@ export class OnStartCommand extends Command<State, {}> {
       );
 
       this.state.game.remainingRounds.push(newRound);
+
+      // /!\ TODO Must be created dynamically by the round
+      this.state.currentTrick = new Trick(1, 1);
+    }
+
+    if (this.state.game.remainingRounds.length > 0) {
+      this.state.currentRound = this.state.game.remainingRounds[0].id;
     }
 
     if (this.state.game.remainingRounds.length > 0) {
@@ -118,10 +126,10 @@ export class OnCardReceivedCommand extends Command<
 {
   removeCardFromPlayerHand(playerId:number, cardId:number) {
     // what it should be
-    // const round = this.state.currentRound;
+    // const round = this.state.remainingRounds[currentRound];
 
     const round = this.state.game.remainingRounds[0];
-    let hand = round.playersHand[playerId].hand;
+    const hand = round.playersHand[playerId].hand;
     let card:Card;
     let i = 0
 
@@ -133,8 +141,49 @@ export class OnCardReceivedCommand extends Command<
     hand.splice(i, 1);
   };
 
+  addCardtoCardsPlayed(playerId:number, card:Card) {
+    const cardsPlayed = this.state.currentTrick.cardsPlayed; 
+    cardsPlayed[playerId] = card;
+  }
+
+  defineTrickSuit(card:Card) {
+    if (card.suit === "special") { 
+      return 
+    } else {
+      this.state.currentTrick.suit = card.suit
+    };
+  }
+
+  // /!\ doesn't seem to change currentTrick.currentPlayer
+  computeNextPlayer(playerId:number, playerOrder:number[]) {
+    const id = playerOrder.indexOf(playerId);
+    const newPlayerId = (id + 1) % playerOrder.length;
+    let newPlayer = playerOrder[newPlayerId];
+    this.state.currentTrick.currentPlayer = newPlayer;
+  }
+
+  trickHasEnded(playerOrder:number[]) {
+    const cardsPlayed = this.state.currentTrick.cardsPlayed;
+    const numberOfCardsPlayed = Object.keys(cardsPlayed).length;
+    return playerOrder.length === numberOfCardsPlayed;
+  }
 
   execute(obj: any) {
-    this.removeCardFromPlayerHand(obj.playerId, obj.cardId);
+    const deck = createDeck();
+    const card = deck[obj.cardId - 1]; // because cards ID start at 1 rather than 0
+    const trick = this.state.currentTrick;
+    const playerId = obj.playerId;
+    const playerOrder = this.state.game.orderedPlayers;
+    let suit = trick.suit;
+
+    this.removeCardFromPlayerHand(playerId, obj.cardId);
+    this.addCardtoCardsPlayed(playerId, card);
+    if (!suit) this.defineTrickSuit(card);
+    this.computeNextPlayer(playerId, playerOrder);
+    if (this.trickHasEnded(playerOrder)) {
+      // compute trick winner
+    } else {
+      // go to next trick
+    }
   }
 }

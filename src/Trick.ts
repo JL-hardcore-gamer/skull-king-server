@@ -9,15 +9,22 @@ export class Trick extends Schema {
   @type('string')
   suit: string;
 
-  @type([Card])
+  @type({ map: Card })
   cardsPlayed = new MapSchema<Card>();
 
-  @type(Player)
-  currentPlayer: Player;
+  @type('number')
+  currentPlayer: number;
 
-  @type([Player])
-  remainingPlayers = new ArraySchema<Player>();
+  @type(["number"])
+  remainingPlayers = new ArraySchema<Number>();
 
-  @type(Player)
-  winner: Player;
+  @type('number')
+  winner: number;
+
+  constructor(id:number, currentPlayer:number) {
+    super();
+
+    this.id = id;
+    this.currentPlayer = currentPlayer;
+  }
 }

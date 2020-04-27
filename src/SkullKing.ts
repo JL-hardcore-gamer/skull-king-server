@@ -2,6 +2,7 @@ import { Room, Client } from 'colyseus';
 import { State } from './State';
 import { Card } from './Card';
 import { Dispatcher } from '@colyseus/command';
+import { prettyPrintObj } from './utils';
 import {
   OnJoinCommand,
   OnStartCommand,
@@ -105,13 +106,19 @@ export class SkullKing extends Room<State> {
       // -- if it is, compute winner
       // -- & go to next trick
 
+      console.log("Players: ");
+      prettyPrintObj(this.state.game.orderedPlayers);
+      console.log("Current: ", this.state.currentTrick.currentPlayer);
+
       this.dispatcher.dispatch(new OnCardReceivedCommand(), {
         playerId: client.auth.ID,
         cardId: message.value,
       });
 
       console.log(message.value);
-      console.log(`${client.auth.nickname} played ${message.value}`);
+      console.log(`${client.auth.nickname} a joué ${this.state.currentTrick.cardsPlayed[client.auth.ID].friendlyName}`);
+      console.log("The suit is: ", this.state.currentTrick.suit);
+      console.log("Current: ", this.state.currentTrick.currentPlayer);
     });
 
     /**
