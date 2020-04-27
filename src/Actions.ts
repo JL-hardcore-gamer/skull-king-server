@@ -36,8 +36,8 @@ export class OnStartCommand extends Command<State, {}> {
     const initialDeck = this.state.game.deck;
 
     let playersId: string[] = Object.keys(this.state.players).map(
-      (playedId: string) => {
-        return playedId;
+      (playerId: string) => {
+        return playerId;
       }
     );
     /**
@@ -52,9 +52,9 @@ export class OnStartCommand extends Command<State, {}> {
      *
      * TODO Neet to improve :
      * Very lazy way to get the first starting player.
-     * Since we have at least 3 players we could just
-     * duplicate the array 4 time to be know the
-     * starting player for every round (3 * 4 = 12)
+     * Since we have at least 2 players we could just
+     * duplicate the array 5 times to be know the
+     * starting player for every round (2 * 5= 10)
      * (we need only the first 10 one)
      */
     shuffledPlayersId = [
@@ -62,6 +62,7 @@ export class OnStartCommand extends Command<State, {}> {
       ...shuffledPlayersId,
       ...shuffledPlayersId,
       ...shuffledPlayersId,
+      ...shuffledPlayersId
     ];
     /**
      * Create 10 rounds
