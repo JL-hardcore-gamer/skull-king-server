@@ -107,3 +107,30 @@ export class OnStartCommand extends Command<State, {}> {
     this.prepareRounds();
   }
 }
+
+export class OnCardReceivedCommand extends Command<
+  State, { playerId:number, cardId:number }
+> 
+{
+  removeCardFromPlayerHand(playerId:number, cardId:number) {
+    // what it should be
+    // const round = this.state.currentRound;
+
+    const round = this.state.game.remainingRounds[0];
+    let hand = round.playersHand[playerId].hand;
+    let card:Card;
+    let i = 0
+
+    for (; i < hand.length; i += 1) {
+      card = hand[i];      
+      if (cardId === card.id) return;
+    }
+
+    hand.splice(i, 1);
+  };
+
+
+  execute(obj: any) {
+    this.removeCardFromPlayerHand(obj.playerId, obj.cardId);
+  }
+}

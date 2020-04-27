@@ -2,7 +2,7 @@ import { Room, Client } from 'colyseus';
 import { State } from './State';
 import { Card } from './Card';
 import { Dispatcher } from '@colyseus/command';
-import { OnJoinCommand, OnStartCommand } from './Actions';
+import { OnJoinCommand, OnStartCommand, OnCardReceivedCommand } from './Actions';
 const db = require('./db/database');
 
 export class SkullKing extends Room<State> {
@@ -72,6 +72,14 @@ export class SkullKing extends Room<State> {
       // - check if trick is over?
       // -- if it is, compute winner
       // -- & go to next trick
+
+      this.dispatcher.dispatch(new OnCardReceivedCommand(), {
+        playerId: client.auth.ID,
+        cardId: message.value,
+      });
+
+      console.log(message.value);
+      console.log(`${client.auth.nickname} played ${message.value}`);
     });
 
     /**
