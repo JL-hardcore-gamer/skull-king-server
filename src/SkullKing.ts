@@ -62,6 +62,18 @@ export class SkullKing extends Room<State> {
       // Do something
     });
 
+    this.onMessage('PLAY_CARD', (client, message) => {
+      // - check that card is from currentPlayer
+      // - remove card from player's hand
+      // - add card to Trick cardPlayed 
+      // (with key player Id)
+      // - check if suit is undefined & define suit of Trick
+      // - update current player
+      // - check if trick is over?
+      // -- if it is, compute winner
+      // -- & go to next trick
+    });
+
     /**
      * /!\ Some part of the documentation is wrong for example `onMessage`.
      * In the documentation they said you need to have a `type` but in

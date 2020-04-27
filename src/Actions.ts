@@ -5,7 +5,7 @@ import { Schema, ArraySchema, MapSchema } from '@colyseus/schema';
 import { Command } from '@colyseus/command';
 import { Round } from './Round';
 import { PlayerHand } from './PlayerHand';
-import { shuffleArray, prettyPrintObj } from './utils';
+import { shuffleArray, deck, prettyPrintObj } from './utils';
 
 export class OnJoinCommand extends Command<
   State,
@@ -33,7 +33,7 @@ export class OnStartCommand extends Command<State, {}> {
    *
    */
   prepareRounds() {
-    const initialDeck = this.state.game.deck;
+    const initialDeck = deck;
 
     let playersId: string[] = Object.keys(this.state.players).map(
       (playerId: string) => {
@@ -103,56 +103,7 @@ export class OnStartCommand extends Command<State, {}> {
     }
   }
 
-  /**
-   * Maybe we should extract this to utils.ts
-   */
-  createDeck() {
-    const suits = ['red', 'blue', 'yellow', 'black'];
-    const numericValues = [
-      '1',
-      '2',
-      '3',
-      '4',
-      '5',
-      '6',
-      '7',
-      '8',
-      '9',
-      '10',
-      '11',
-      '12',
-      '13',
-    ];
-    const specialValues: Record<string, number> = {
-      'Skull King': 1,
-      Mermaid: 2,
-      Pirate: 5,
-      'White Flag': 5,
-      'Bloody Mary': 1,
-    };
-
-    let id = 1;
-
-    suits.forEach((suit) => {
-      numericValues.forEach((num) => {
-        this.state.game.deck.push(new Card(id, suit, num));
-        id += 1;
-      });
-    });
-
-    for (const character in specialValues) {
-      for (let num = specialValues[character]; num > 0; num -= 1) {
-        this.state.game.deck.push(new Card(id, 'special', character));
-        id += 1;
-      }
-    }
-  }
-
   execute(obj: any) {
-    /**
-     * This can be done before actually
-     */
-    this.createDeck();
     this.prepareRounds();
   }
 }
