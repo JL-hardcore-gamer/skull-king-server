@@ -147,12 +147,17 @@ export class OnCardReceivedCommand extends Command<
   }
 
   // /!\ doesn't seem to change currentTrick.currentPlayer
-  computeNextPlayer(playerId:number) {
-    const playerOrder = this.state.game.orderedPlayers;
+  computeNextPlayer(playerId:number, playerOrder:number[]) {
     const id = playerOrder.indexOf(playerId);
     const newPlayerId = (id + 1) % playerOrder.length;
     let newPlayer = playerOrder[newPlayerId];
     this.state.currentTrick.currentPlayer = newPlayer;
+  }
+
+  trickHasEnded(playerOrder:number[]) {
+    const cardsPlayed = this.state.currentTrick.cardsPlayed;
+    const numberOfCardsPlayed = Object.keys(cardsPlayed).length;
+    return playerOrder.length === numberOfCardsPlayed;
   }
 
   execute(obj: any) {
@@ -160,11 +165,17 @@ export class OnCardReceivedCommand extends Command<
     const card = deck[obj.cardId - 1]; // because cards ID start at 1 rather than 0
     const trick = this.state.currentTrick;
     const playerId = obj.playerId;
+    const playerOrder = this.state.game.orderedPlayers;
     let suit = trick.suit;
 
     this.removeCardFromPlayerHand(playerId, obj.cardId);
     this.addCardtoCardsPlayed(playerId, card);
     if (!suit) this.defineTrickSuit(card);
-    this.computeNextPlayer(playerId);
+    this.computeNextPlayer(playerId, playerOrder);
+    if (this.trickHasEnded(playerOrder)) {
+      // compute trick winner
+    } else {
+      // go to next trick
+    }
   }
 }
