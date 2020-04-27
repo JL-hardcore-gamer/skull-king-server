@@ -7,6 +7,7 @@ import {
   OnStartCommand,
   OnCardReceivedCommand,
 } from './Actions';
+import { Player } from './Player';
 const db = require('./db/database');
 
 export class SkullKing extends Room<State> {
@@ -61,20 +62,42 @@ export class SkullKing extends Room<State> {
     this.onMessage('BET', (client, message) => {
       console.log(`${client.auth.nickname} bet ${message.value}`);
 
-      // Increase Round nb of bet
+      const playersCount = this.state.players.length + 1;
+      const player = this.state.players.find(
+        (player: Player) => player.name === client.auth.nickname
+      );
 
       // Change player's bet in Round -> Score
+      if (player) {
+        this.state.game.remainingRounds[this.state.currentRound].playersScore[
+          player.id
+        ].tricksBet = message.value;
+      } else {
+        // Error
+      }
 
-      // If nbOfbet == nbOfPlayer
-      // -> Broadcast
+      // Increase Round nb of bet
 
-      // Do something
+      this.state.game.remainingRounds[
+        this.state.currentRound
+      ].numberOfBets += 1;
+
+      if (
+        this.state.game.remainingRounds[this.state.currentRound]
+          .numberOfBets === playersCount
+      ) {
+        this.broadcast('START_ROUND', {
+          currentPlayer: this.state.game.remainingRounds[
+            this.state.currentRound
+          ].firstPlayer,
+        });
+      }
     });
 
     this.onMessage('PLAY_CARD', (client, message) => {
       // - check that card is from currentPlayer
       // - remove card from player's hand
-      // - add card to Trick cardPlayed 
+      // - add card to Trick cardPlayed
       // (with key player Id)
       // - check if suit is undefined & define suit of Trick
       // - update current player
