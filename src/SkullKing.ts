@@ -86,7 +86,7 @@ export class SkullKing extends Room<State> {
         this.broadcast('START_ROUND', {
           currentPlayer: this.state.game.remainingRounds[
             this.state.currentRound
-          ].firstPlayer,
+          ].startingPlayer,
         });
       }
     });

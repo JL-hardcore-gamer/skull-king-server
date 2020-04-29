@@ -35,8 +35,6 @@ export class OnStartCommand extends Command<State, {}> {
    *
    */
   prepareRounds() {
-    const initialDeck = deck;
-
     let playersId: string[] = Object.keys(this.state.players).map(
       (playerId: string) => {
         return playerId;
@@ -66,13 +64,15 @@ export class OnStartCommand extends Command<State, {}> {
       ...shuffledPlayersId,
       ...shuffledPlayersId,
     ];
+
+    // Create a deck of index so it can easily be sorted
+    let prevDeck = deck.map((_, idx) => idx);
+
     /**
      * Create 10 rounds
      */
-    let prevDeck: Card[] = initialDeck;
-
     for (let roundId = 0; roundId < 10; ++roundId) {
-      let newShuffledDeck = shuffleArray(prevDeck);
+      let newShuffledDeck = shuffleArray([...prevDeck]);
       prevDeck = newShuffledDeck;
 
       let playersHand = new MapSchema<PlayerHand>();
@@ -89,7 +89,10 @@ export class OnStartCommand extends Command<State, {}> {
         playersScore[playerId] = new PlayerRoundScore();
         let nbOfCardToDeal = roundId + 1;
         for (nbOfCardToDeal; nbOfCardToDeal > 0; --nbOfCardToDeal) {
-          playersHand[playerId].hand.push(newShuffledDeck.shift());
+          const cardIdx = newShuffledDeck.shift();
+          // This is the only way to duplicate correctly a class object
+          const newCard = deck[cardIdx].clone();
+          playersHand[playerId].hand.push(newCard);
         }
       });
 
@@ -108,10 +111,6 @@ export class OnStartCommand extends Command<State, {}> {
 
       // /!\ TODO Must be created dynamically by the round
       this.state.currentTrick = new Trick(1, 1);
-    }
-
-    if (this.state.game.remainingRounds.length > 0) {
-      this.state.currentRound = this.state.game.remainingRounds[0].id;
     }
 
     if (this.state.game.remainingRounds.length > 0) {
