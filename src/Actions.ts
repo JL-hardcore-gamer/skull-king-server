@@ -114,6 +114,10 @@ export class OnStartCommand extends Command<State, {}> {
       // /!\ I'm not sure  why this  is working, but it seems to work
       orderedPlayers.push(parseInt(roundStartingPlayer));
 
+      // only keep one id for each player
+      let numberOfPlayers = Object.keys(this.state.players).length;
+      orderedPlayers.splice(numberOfPlayers);
+
       // /!\ TODO Must be created dynamically by the round
       this.state.currentTrick = new Trick(1, orderedPlayers[0]);
     }
@@ -187,11 +191,10 @@ export class OnCardReceivedCommand extends Command<
     this.removeCardFromPlayerHand(playerId, obj.cardId);
     this.addCardtoCardsPlayed(playerId, card);
     if (!suit) this.defineTrickSuit(card);
-    this.computeNextPlayer(playerId, playerOrder);
     if (this.trickHasEnded(playerOrder)) {
       // compute trick winner
     } else {
-      // go to next trick
+      this.computeNextPlayer(playerId, playerOrder);
     }
   }
 }
