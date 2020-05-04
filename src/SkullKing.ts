@@ -102,8 +102,7 @@ export class SkullKing extends Room<State> {
       // -- if it is, compute winner
       // -- & go to next trick
 
-      console.log('Players: ');
-      prettyPrintObj(this.state.game.orderedPlayers);
+      console.log('player array:', this.state.game.orderedPlayers);
       console.log('Current: ', this.state.currentTrick.currentPlayer);
 
       this.dispatcher.dispatch(new OnCardReceivedCommand(), {
@@ -166,18 +165,18 @@ export class SkullKing extends Room<State> {
       nickname: user.nickname,
       email: user.email,
     });
-    // For test
-    this.dispatcher.dispatch(new OnJoinCommand(), {
-      id: 2,
-      nickname: 'Tony',
-      email: 'jl@test.com',
-    });
+    // // For test
+    // this.dispatcher.dispatch(new OnJoinCommand(), {
+    //   id: 2,
+    //   nickname: 'Tony',
+    //   email: 'jl@test.com',
+    // });
 
-    this.dispatcher.dispatch(new OnJoinCommand(), {
-      id: 3,
-      nickname: 'Test',
-      email: 'test@test.com	',
-    });
+    // this.dispatcher.dispatch(new OnJoinCommand(), {
+    //   id: 3,
+    //   nickname: 'Test',
+    //   email: 'test@test.com	',
+    // });
   }
 
   // When a client leaves the room

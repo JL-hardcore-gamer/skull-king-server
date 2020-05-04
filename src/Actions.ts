@@ -110,8 +110,12 @@ export class OnStartCommand extends Command<State, {}> {
 
       this.state.game.remainingRounds.push(newRound);
 
+      let orderedPlayers = this.state.game.orderedPlayers;
+      // /!\ I'm not sure  why this  is working, but it seems to work
+      orderedPlayers.push(parseInt(roundStartingPlayer));
+
       // /!\ TODO Must be created dynamically by the round
-      this.state.currentTrick = new Trick(1, 1);
+      this.state.currentTrick = new Trick(1, orderedPlayers[0]);
     }
 
     if (this.state.game.remainingRounds.length > 0) {
