@@ -137,20 +137,28 @@ export class OnCardReceivedCommand extends Command<
   { playerId: number; cardId: number }
 > {
   removeCardFromPlayerHand(playerId: number, cardId: number) {
+    console.log('removeCardFromPlayerHand is called !');
     // what it should be
     // const round = this.state.remainingRounds[currentRound];
 
     const round = this.state.game.remainingRounds[0];
     const hand = round.playersHand[playerId].hand;
-    let card: Card;
-    let i = 0;
 
-    for (; i < hand.length; i += 1) {
-      card = hand[i];
-      if (cardId === card.id) return;
-    }
+    // let card: Card;
+    // let i = 0;
 
-    hand.splice(i, 1);
+    // Procedure way => JS way
+    // And it's buggy because return stop the function, it should be break
+    // for (; i < hand.length; i += 1) {
+    //   console.log('boucle inf ?');
+    //   card = hand[i];
+    //   if (cardId === card.id) return;
+    // }
+
+    // It's also possible to do it with filter actually
+    const cardToRemoveIdx = hand.findIndex((card: Card) => card.id === cardId);
+
+    hand.splice(cardToRemoveIdx, 1);
   }
 
   addCardtoCardsPlayed(playerId: number, card: Card) {
@@ -180,30 +188,34 @@ export class OnCardReceivedCommand extends Command<
     return playerOrder.length === numberOfCardsPlayed;
   }
 
-  computeWinner(suit: string, cardsPlayed: MapSchema<Card>, playerOrder: number[]) {
+  computeWinner(
+    suit: string,
+    cardsPlayed: MapSchema<Card>,
+    playerOrder: number[]
+  ) {
     const cards = Object.values(cardsPlayed);
-    const characters = cards.map(card => card.character);
-    const suits = cards.map(card => card.suit);
-    let winner:number;
+    const characters = cards.map((card) => card.character);
+    const suits = cards.map((card) => card.suit);
+    let winner: number;
 
-    const findFirstCard = function(character:string) {
-      let card:Card;
-      let playerID:number;
-  
+    const findFirstCard = function (character: string) {
+      let card: Card;
+      let playerID: number;
+
       for (let i = 0, length = playerOrder.length; i < length; i += 1) {
         playerID = playerOrder[i];
         card = cardsPlayed[playerID];
         if (card.character === character) return playerID;
-      };
-  
+      }
+
       return -1;
     };
 
-    const findHighestCard = (givenSuit:string) => {
+    const findHighestCard = (givenSuit: string) => {
       let winner = -1;
       let highestValue = 0;
-      let card:Card;
-      let cardValue:number;
+      let card: Card;
+      let cardValue: number;
 
       for (let playerID in cardsPlayed) {
         card = cardsPlayed[playerID];
@@ -212,7 +224,7 @@ export class OnCardReceivedCommand extends Command<
           winner = Number(playerID);
           highestValue = cardValue;
         }
-      };
+      }
 
       return winner;
     };
@@ -254,8 +266,8 @@ export class OnCardReceivedCommand extends Command<
     /!\ TODO: beware of the Bloody Mary. Her versatility is not handled here!
   */
 
-
   execute(obj: any) {
+    console.log('===== EXECUTE ===== ');
     const deck = createDeck();
     const card = deck[obj.cardId - 1]; // because cards ID start at 1 rather than 0
     const trick = this.state.currentTrick;
@@ -263,6 +275,7 @@ export class OnCardReceivedCommand extends Command<
     const playerOrder = this.state.game.orderedPlayers;
     let suit = trick.suit;
 
+    console.log('JUST BEFORE REMOVED');
     this.removeCardFromPlayerHand(playerId, obj.cardId);
     this.addCardtoCardsPlayed(playerId, card);
     if (!suit) this.defineTrickSuit(card);

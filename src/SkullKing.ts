@@ -30,19 +30,6 @@ export class SkullKing extends Room<State> {
     }
 
     // All the logic will be here
-
-    /**
-     * Useful for testing purpose
-     */
-    this.onMessage('TEST', (client, message) => {
-      console.log('message received:', message);
-      console.log('client:', client.auth.nickname);
-      console.log('client ID:', client.auth.ID);
-      console.log('player array:', this.state.game.orderedPlayers);
-
-      this.dispatcher.dispatch(new OnStartCommand(), {});
-    });
-
     this.onMessage('START_GAME', (client, message) => {
       console.log('message received:', message);
       console.log('client:', client.auth.nickname);
@@ -123,18 +110,18 @@ export class SkullKing extends Room<State> {
       console.log('Winner: ', winner);
 
       if (winner !== undefined) {
-        this.broadcast('TOP_MESSAGE', `${this.state.players[winner].name} remporte le pli avec ${this.state.currentTrick.cardsPlayed[winner].friendlyName} !`);
+        this.broadcast(
+          'TOP_MESSAGE',
+          `${this.state.players[winner].name} remporte le pli avec ${this.state.currentTrick.cardsPlayed[winner].friendlyName} !`
+        );
 
-        this.broadcast('TRICK_WINNER', `${this.state.players[winner].name} remporte le pli avec ${this.state.currentTrick.cardsPlayed[winner].friendlyName} !`);
+        this.broadcast(
+          'TRICK_WINNER',
+          `${this.state.players[winner].name} remporte le pli avec ${this.state.currentTrick.cardsPlayed[winner].friendlyName} !`
+        );
       }
     });
 
-    /**
-     * /!\ Some part of the documentation is wrong for example `onMessage`.
-     * In the documentation they said you need to have a `type` but in
-     * the implementation the `type` is missing
-     * cf: https://docs.colyseus.io/server/room/#onmessage-type-callback
-     */
     this.onMessage('*', (client: Client, message: any) => {
       //
       // Triggers when any other type of message is sent,
@@ -174,7 +161,7 @@ export class SkullKing extends Room<State> {
       nickname: user.nickname,
       email: user.email,
     });
-    // // For test
+    // For test
     // this.dispatcher.dispatch(new OnJoinCommand(), {
     //   id: 2,
     //   nickname: 'Tony',
@@ -184,7 +171,7 @@ export class SkullKing extends Room<State> {
     // this.dispatcher.dispatch(new OnJoinCommand(), {
     //   id: 3,
     //   nickname: 'Test',
-    //   email: 'test@test.com	',
+    //   email: 'test@test.com',
     // });
   }
 
