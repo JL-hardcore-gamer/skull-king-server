@@ -123,9 +123,9 @@ export class SkullKing extends Room<State> {
       console.log('Winner: ', winner);
 
       if (winner !== undefined) {
-        this.broadcast('TOP_MESSAGE', `${this.state.players[winner].name} remporte le pli avec le ${this.state.currentTrick.cardsPlayed[winner].friendlyName} !`);
+        this.broadcast('TOP_MESSAGE', `${this.state.players[winner].name} remporte le pli avec ${this.state.currentTrick.cardsPlayed[winner].friendlyName} !`);
 
-        this.broadcast('TRICK_WINNER', `${this.state.players[winner].name} remporte le pli avec le ${this.state.currentTrick.cardsPlayed[winner].friendlyName} !`);
+        this.broadcast('TRICK_WINNER', `${this.state.players[winner].name} remporte le pli avec ${this.state.currentTrick.cardsPlayed[winner].friendlyName} !`);
       }
     });
 
