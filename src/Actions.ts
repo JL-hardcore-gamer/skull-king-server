@@ -73,6 +73,7 @@ export class OnStartCommand extends Command<State, {}> {
      */
     for (let roundId = 0; roundId < 10; ++roundId) {
       let newShuffledDeck = shuffleArray([...prevDeck]);
+      let deckToDeal = [...newShuffledDeck];
       prevDeck = newShuffledDeck;
 
       let playersHand = new MapSchema<PlayerHand>();
@@ -89,7 +90,7 @@ export class OnStartCommand extends Command<State, {}> {
         playersScore[playerId] = new PlayerRoundScore();
         let nbOfCardToDeal = roundId + 1;
         for (nbOfCardToDeal; nbOfCardToDeal > 0; --nbOfCardToDeal) {
-          const cardIdx = newShuffledDeck.shift();
+          const cardIdx = deckToDeal.shift();
           // This is the only way to duplicate correctly a class object
           const newCard = deck[cardIdx].clone();
           playersHand[playerId].hand.push(newCard);

@@ -8,7 +8,8 @@ const prettyPrintObj = (obj: any) => {
   });
 };
 
-const shuffleArray = <T>(a: Array<T>): Array<T> => {
+const shuffleArray = <T>(arr: Array<T>): Array<T> => {
+  let a = [...arr];
   for (let i = a.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [a[i], a[j]] = [a[j], a[i]];
@@ -42,7 +43,7 @@ const createDeck = (): Array<Card> => {
   };
 
   let id = 1;
-  let deck:Array<Card> = [];
+  let deck: Array<Card> = [];
 
   suits.forEach((suit) => {
     numericValues.forEach((num) => {
@@ -59,7 +60,7 @@ const createDeck = (): Array<Card> => {
   }
 
   return deck;
-}
+};
 
 const deck = createDeck();
 
