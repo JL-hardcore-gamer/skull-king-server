@@ -118,6 +118,7 @@ export class SkullKing extends Room<State> {
       );
       console.log('The suit is: ', this.state.currentTrick.suit);
       console.log('Current: ', this.state.currentTrick.currentPlayer);
+      console.log('Winner: ', this.state.currentTrick.winner);
     });
 
     /**

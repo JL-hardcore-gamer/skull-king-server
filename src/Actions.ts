@@ -180,6 +180,63 @@ export class OnCardReceivedCommand extends Command<
     return playerOrder.length === numberOfCardsPlayed;
   }
 
+  computeWinner(suit: string, cardsPlayed: MapSchema<Card>, playerOrder: number[]) {
+    const cards = Object.values(cardsPlayed);
+    const characters = cards.map(card => card.character);
+    const suits = cards.map(card => card.suit);
+    let winner:number;
+
+    const findFirstCard = function(character:string) {
+      let card:Card;
+      let playerID:number;
+  
+      for (let i = 0, length = playerOrder.length; i < length; i += 1) {
+        playerID = playerOrder[i];
+        card = cardsPlayed[playerID];
+        if (card.character === character) return playerID;
+      };
+  
+      return -1;
+    };
+
+    if (characters.includes('Skull King')) {
+      if (characters.includes('Mermaid')) {
+        winner = findFirstCard('Mermaid');
+      } else {
+        winner = findFirstCard('Skull King');
+      }
+    } else if (characters.includes('Pirate')) {
+      winner = findFirstCard('Pirate');
+    } else if (characters.includes('Mermaid')) {
+      winner = findFirstCard('Mermaid');
+    } else if (suits.includes('black')) {
+      // winner is the highest black card
+    } else {
+      // winner is the highest card of the trick suit
+    }
+
+    this.state.currentTrick.winner = winner;
+  }
+
+  /*
+    Who wins the trick? 
+    1/ if the Skull King is played:
+      - check if there's also a Mermaid:
+      -- if it is, the 1st mermaid played is the winner
+      -- else, the SK is the winner
+    
+    2/ if a Pirate is played, the 1st pirate played is the winner
+
+    3/ if a Mermaid is played, the 1st mermaid played is the winner
+
+    4/ if a black card is played, the highest black card is the winner
+
+    5/ else, the highest card with the trick suit is the winner
+
+    /!\ TODO: beware of the Bloody Mary. Her versatility is not handled here!
+  */
+
+
   execute(obj: any) {
     const deck = createDeck();
     const card = deck[obj.cardId - 1]; // because cards ID start at 1 rather than 0
@@ -192,7 +249,7 @@ export class OnCardReceivedCommand extends Command<
     this.addCardtoCardsPlayed(playerId, card);
     if (!suit) this.defineTrickSuit(card);
     if (this.trickHasEnded(playerOrder)) {
-      // compute trick winner
+      this.computeWinner(suit, trick.cardsPlayed, playerOrder);
     } else {
       this.computeNextPlayer(playerId, playerOrder);
     }
