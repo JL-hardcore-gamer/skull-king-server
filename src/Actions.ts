@@ -199,6 +199,24 @@ export class OnCardReceivedCommand extends Command<
       return -1;
     };
 
+    const findHighestCard = (givenSuit:string) => {
+      let winner = -1;
+      let highestValue = 0;
+      let card:Card;
+      let cardValue:number;
+
+      for (let playerID in cardsPlayed) {
+        card = cardsPlayed[playerID];
+        cardValue = Number(card.character);
+        if (card.suit === givenSuit && cardValue > highestValue) {
+          winner = Number(playerID);
+          highestValue = cardValue;
+        }
+      };
+
+      return winner;
+    };
+
     if (characters.includes('Skull King')) {
       if (characters.includes('Mermaid')) {
         winner = findFirstCard('Mermaid');
@@ -210,9 +228,9 @@ export class OnCardReceivedCommand extends Command<
     } else if (characters.includes('Mermaid')) {
       winner = findFirstCard('Mermaid');
     } else if (suits.includes('black')) {
-      // winner is the highest black card
+      winner = findHighestCard('black');
     } else {
-      // winner is the highest card of the trick suit
+      winner = findHighestCard(suit);
     }
 
     this.state.currentTrick.winner = winner;
