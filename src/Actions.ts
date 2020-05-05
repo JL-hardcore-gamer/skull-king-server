@@ -136,26 +136,9 @@ export class OnCardReceivedCommand extends Command<
   State,
   { playerId: number; cardId: number }
 > {
-  removeCardFromPlayerHand(playerId: number, cardId: number) {
+  removeCardFromPlayerHand(round: Round, playerId: number, cardId: number) {
     console.log('removeCardFromPlayerHand is called !');
-    // what it should be
-    // const round = this.state.remainingRounds[currentRound];
-
-    const round = this.state.game.remainingRounds[0];
     const hand = round.playersHand[playerId].hand;
-
-    // let card: Card;
-    // let i = 0;
-
-    // Procedure way => JS way
-    // And it's buggy because return stop the function, it should be break
-    // for (; i < hand.length; i += 1) {
-    //   console.log('boucle inf ?');
-    //   card = hand[i];
-    //   if (cardId === card.id) return;
-    // }
-
-    // It's also possible to do it with filter actually
     const cardToRemoveIdx = hand.findIndex((card: Card) => card.id === cardId);
 
     hand.splice(cardToRemoveIdx, 1);
@@ -174,7 +157,6 @@ export class OnCardReceivedCommand extends Command<
     }
   }
 
-  // /!\ doesn't seem to change currentTrick.currentPlayer
   computeNextPlayer(playerId: number, playerOrder: number[]) {
     const id = playerOrder.indexOf(playerId);
     const newPlayerId = (id + 1) % playerOrder.length;
@@ -191,7 +173,8 @@ export class OnCardReceivedCommand extends Command<
   computeWinner(
     suit: string,
     cardsPlayed: MapSchema<Card>,
-    playerOrder: number[]
+    playerOrder: number[],
+    round: Round
   ) {
     const cards = Object.values(cardsPlayed);
     const characters = cards.map((card) => card.character);
@@ -232,8 +215,16 @@ export class OnCardReceivedCommand extends Command<
     if (characters.includes('Skull King')) {
       if (characters.includes('Mermaid')) {
         winner = findFirstCard('Mermaid');
+        // Add skull king captured to PlayerRoundScore
+        round.playersScore[winner].skullKingCaptured += 1;
       } else {
         winner = findFirstCard('Skull King');
+        // Add number of pirates captured to PlayerRoundScore
+        let numberOfPirates: number;
+        numberOfPirates = cards.reduce((total, card) => {
+          card.character === 'Pirate' ? total + 1 : total;
+        }, 0);
+        round.playersScore[winner].piratesCaptured += numberOfPirates;
       }
     } else if (characters.includes('Pirate')) {
       winner = findFirstCard('Pirate');
@@ -245,6 +236,8 @@ export class OnCardReceivedCommand extends Command<
       winner = findHighestCard(suit);
     }
 
+    // Add victory to PlayerRoundScore
+    round.playersScore[winner].tricksWon += 1;
     this.state.currentTrick.winner = winner;
   }
 
@@ -273,14 +266,17 @@ export class OnCardReceivedCommand extends Command<
     const trick = this.state.currentTrick;
     const playerId = obj.playerId;
     const playerOrder = this.state.game.orderedPlayers;
+    // what it should be
+    // const round = this.state.remainingRounds[currentRound];
+    const round = this.state.game.remainingRounds[0];
     let suit = trick.suit;
 
     console.log('JUST BEFORE REMOVED');
-    this.removeCardFromPlayerHand(playerId, obj.cardId);
+    this.removeCardFromPlayerHand(round, playerId, obj.cardId);
     this.addCardtoCardsPlayed(playerId, card);
     if (!suit) this.defineTrickSuit(card);
     if (this.trickHasEnded(playerOrder)) {
-      this.computeWinner(suit, trick.cardsPlayed, playerOrder);
+      this.computeWinner(suit, trick.cardsPlayed, playerOrder, round);
     } else {
       this.computeNextPlayer(playerId, playerOrder);
     }
