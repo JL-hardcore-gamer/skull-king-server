@@ -79,16 +79,6 @@ export class SkullKing extends Room<State> {
     });
 
     this.onMessage('PLAY_CARD', (client, message) => {
-      // - check that card is from currentPlayer
-      // - remove card from player's hand
-      // - add card to Trick cardPlayed
-      // (with key player Id)
-      // - check if suit is undefined & define suit of Trick
-      // - update current player
-      // - check if trick is over?
-      // -- if it is, compute winner
-      // -- & go to next trick
-
       console.log('player array:', this.state.game.orderedPlayers);
       console.log('Current: ', this.state.currentTrick.currentPlayer);
 
@@ -97,7 +87,6 @@ export class SkullKing extends Room<State> {
         cardId: message.value,
       });
 
-      console.log(message.value);
       console.log(
         `${client.auth.nickname} a joué ${
           this.state.currentTrick.cardsPlayed[client.auth.ID].friendlyName
@@ -109,14 +98,15 @@ export class SkullKing extends Room<State> {
       let winner = this.state.currentTrick.winner;
       console.log('Winner: ', winner);
 
-      if (winner !== undefined) {
+      if (winner) {
         this.broadcast(
-          'TOP_MESSAGE',
+          'TRICK_WINNER',
           `${this.state.players[winner].name} remporte le pli avec ${this.state.currentTrick.cardsPlayed[winner].friendlyName} !`
         );
 
+        // for tests
         this.broadcast(
-          'TRICK_WINNER',
+          'TOP_MESSAGE',
           `${this.state.players[winner].name} remporte le pli avec ${this.state.currentTrick.cardsPlayed[winner].friendlyName} !`
         );
       }

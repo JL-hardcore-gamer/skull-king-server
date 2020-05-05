@@ -259,8 +259,18 @@ export class OnCardReceivedCommand extends Command<
     /!\ TODO: beware of the Bloody Mary. Her versatility is not handled here!
   */
 
+  startNextTrick(round: Round, trick: Trick) {
+    const winner = trick.winner;
+
+    // v not useful I think v
+    round.firstPlayer = winner;
+
+    const nextID = trick.id + 1;
+    this.state.currentTrick = new Trick(nextID, winner);
+    round.remainingTricks -= 1;
+  }
+
   execute(obj: any) {
-    console.log('===== EXECUTE ===== ');
     const deck = createDeck();
     const card = deck[obj.cardId - 1]; // because cards ID start at 1 rather than 0
     const trick = this.state.currentTrick;
@@ -271,7 +281,6 @@ export class OnCardReceivedCommand extends Command<
     const round = this.state.game.remainingRounds[0];
     let suit = trick.suit;
 
-    console.log('JUST BEFORE REMOVED');
     this.removeCardFromPlayerHand(round, playerId, obj.cardId);
     this.addCardtoCardsPlayed(playerId, card);
     if (!suit) this.defineTrickSuit(card);
