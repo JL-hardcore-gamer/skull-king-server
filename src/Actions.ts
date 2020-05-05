@@ -284,8 +284,19 @@ export class OnCardReceivedCommand extends Command<
     this.removeCardFromPlayerHand(round, playerId, obj.cardId);
     this.addCardtoCardsPlayed(playerId, card);
     if (!suit) this.defineTrickSuit(card);
+
     if (this.trickHasEnded(playerOrder)) {
       this.computeWinner(suit, trick.cardsPlayed, playerOrder, round);
+      
+      // /!\ v seems to freeze the game before a winner is computed v
+
+      // start new trick unless no more remaining tricks
+      // if (round.remainingTricks) {
+      //   this.startNextTrick(round, trick);
+      // } else {
+      //   // compute round scores
+      //   // start new round
+      // }
     } else {
       this.computeNextPlayer(playerId, playerOrder);
     }
