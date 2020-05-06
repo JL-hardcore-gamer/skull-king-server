@@ -287,16 +287,20 @@ export class OnCardReceivedCommand extends Command<
 
     if (this.trickHasEnded(playerOrder)) {
       this.computeWinner(suit, trick.cardsPlayed, playerOrder, round);
-      
+
       // /!\ v seems to freeze the game before a winner is computed v
 
+      console.log('=== round.remainingTricks ===', round.remainingTricks);
       // start new trick unless no more remaining tricks
-      // if (round.remainingTricks) {
-      //   this.startNextTrick(round, trick);
-      // } else {
-      //   // compute round scores
-      //   // start new round
-      // }
+      if (round.remainingTricks) {
+        this.startNextTrick(round, trick);
+      } else {
+        // compute round scores
+        // start new round
+        console.log('BEFORE INCREASE NEW ROUND');
+        this.state.currentRound += 1;
+        console.log('NEW ROUND', this.state.currentRound);
+      }
     } else {
       this.computeNextPlayer(playerId, playerOrder);
     }

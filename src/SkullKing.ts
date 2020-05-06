@@ -23,6 +23,7 @@ export class SkullKing extends Room<State> {
   onCreate(options: any) {
     console.log(`${options.nickname} create a room !`);
     this.setState(new State());
+    this.clock.start();
 
     // Useful to display the owner of the room
     if (options.nickname) {
@@ -81,7 +82,7 @@ export class SkullKing extends Room<State> {
     this.onMessage('PLAY_CARD', (client, message) => {
       console.log('player array:', this.state.game.orderedPlayers);
       console.log('Current: ', this.state.currentTrick.currentPlayer);
-
+      let currentRound = this.state.currentRound;
       this.dispatcher.dispatch(new OnCardReceivedCommand(), {
         playerId: client.auth.ID,
         cardId: message.value,
@@ -98,6 +99,8 @@ export class SkullKing extends Room<State> {
       let winner = this.state.currentTrick.winner;
       console.log('Winner: ', winner);
 
+      console.log('currentRound', currentRound);
+      console.log('this.state.currentRound', this.state.currentRound);
       if (winner) {
         this.broadcast(
           'TRICK_WINNER',
@@ -109,6 +112,18 @@ export class SkullKing extends Room<State> {
           'TOP_MESSAGE',
           `${this.state.players[winner].name} remporte le pli avec ${this.state.currentTrick.cardsPlayed[winner].friendlyName} !`
         );
+
+        if (currentRound !== this.state.currentRound) {
+          // New Round !
+          console.log('New Round !');
+          this.clock.setTimeout(() => {
+            const newRoundMaxBet = this.state.currentRound + 1;
+            this.broadcast('START_BETTING', {
+              maxBet: newRoundMaxBet,
+              topMessage: `Pari entre 0 et ${newRoundMaxBet}`,
+            });
+          }, 3_000);
+        }
       }
     });
 

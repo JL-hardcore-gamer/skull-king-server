@@ -47,7 +47,7 @@ export class Round extends Schema {
     this.playersScore = playersScore;
 
     // when we start a round, we automatically start a trick
-    // eg. at the start of round 3, there will be 2 tricks remaining after the current one 
-    this.remainingTricks = id - 1;
+    // eg. at the start of round 3, there will be 2 tricks remaining after the current one
+    this.remainingTricks = id;
   }
 }
