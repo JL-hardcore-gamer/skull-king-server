@@ -270,15 +270,19 @@ export class OnCardReceivedCommand extends Command<
     round.remainingTricks -= 1;
   }
 
+  startNextRound() {
+    const round = this.state.game.remainingRounds[this.state.currentRound];
+    const startingPlayer = round.startingPlayer;
+    this.state.currentTrick = new Trick(1, startingPlayer);
+  }
+
   execute(obj: any) {
     const deck = createDeck();
     const card = deck[obj.cardId];
     const trick = this.state.currentTrick;
     const playerId = obj.playerId;
     const playerOrder = this.state.game.orderedPlayers;
-    // what it should be
-    // const round = this.state.remainingRounds[currentRound];
-    const round = this.state.game.remainingRounds[0];
+    const round = this.state.game.remainingRounds[this.state.currentRound];
     let suit = trick.suit;
 
     this.removeCardFromPlayerHand(round, playerId, obj.cardId);
@@ -287,8 +291,6 @@ export class OnCardReceivedCommand extends Command<
 
     if (this.trickHasEnded(playerOrder)) {
       this.computeWinner(suit, trick.cardsPlayed, playerOrder, round);
-
-      // /!\ v seems to freeze the game before a winner is computed v
 
       console.log('=== round.remainingTricks ===', round.remainingTricks);
       // start new trick unless no more remaining tricks
@@ -300,6 +302,7 @@ export class OnCardReceivedCommand extends Command<
         console.log('BEFORE INCREASE NEW ROUND');
         this.state.currentRound += 1;
         console.log('NEW ROUND', this.state.currentRound);
+        // this.startNextRound();
       }
     } else {
       this.computeNextPlayer(playerId, playerOrder);
