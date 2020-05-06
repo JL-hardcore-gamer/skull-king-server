@@ -42,7 +42,7 @@ const createDeck = (): Array<Card> => {
     'Bloody Mary': 1,
   };
 
-  let id = 1;
+  let id = 0;
   let deck: Array<Card> = [];
 
   suits.forEach((suit) => {

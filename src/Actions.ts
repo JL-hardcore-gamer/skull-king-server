@@ -272,7 +272,7 @@ export class OnCardReceivedCommand extends Command<
 
   execute(obj: any) {
     const deck = createDeck();
-    const card = deck[obj.cardId - 1]; // because cards ID start at 1 rather than 0
+    const card = deck[obj.cardId];
     const trick = this.state.currentTrick;
     const playerId = obj.playerId;
     const playerOrder = this.state.game.orderedPlayers;
