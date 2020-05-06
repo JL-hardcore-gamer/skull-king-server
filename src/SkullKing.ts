@@ -7,6 +7,8 @@ import {
   OnJoinCommand,
   OnStartCommand,
   OnCardReceivedCommand,
+  AfterCardPlayedCommand,
+  OnEndOfTrickCommand,
 } from './Actions';
 import { Player } from './Player';
 const db = require('./db/database');
@@ -96,35 +98,43 @@ export class SkullKing extends Room<State> {
       console.log('The suit is: ', this.state.currentTrick.suit);
       console.log('Current: ', this.state.currentTrick.currentPlayer);
 
+      this.dispatcher.dispatch(new AfterCardPlayedCommand(), {
+        playerId: client.auth.ID,
+      });
+
       let winner = this.state.currentTrick.winner;
-      console.log('Winner: ', winner);
+      console.log('Winner: ', winner); 
+
+      this.dispatcher.dispatch(new OnEndOfTrickCommand(), {});
 
       console.log('currentRound', currentRound);
       console.log('this.state.currentRound', this.state.currentRound);
+
       if (winner) {
         this.broadcast(
           'TRICK_WINNER',
           `${this.state.players[winner].name} remporte le pli avec ${this.state.currentTrick.cardsPlayed[winner].friendlyName} !`
         );
-
-        // for tests
-        this.broadcast(
-          'TOP_MESSAGE',
-          `${this.state.players[winner].name} remporte le pli avec ${this.state.currentTrick.cardsPlayed[winner].friendlyName} !`
-        );
-
-        if (currentRound !== this.state.currentRound) {
-          // New Round !
-          console.log('New Round !');
-          this.clock.setTimeout(() => {
-            const newRoundMaxBet = this.state.currentRound + 1;
-            this.broadcast('START_BETTING', {
-              maxBet: newRoundMaxBet,
-              topMessage: `Pari entre 0 et ${newRoundMaxBet}`,
-            });
-          }, 3_000);
-        }
       }
+
+      //   // for tests
+      //   this.broadcast(
+      //     'TOP_MESSAGE',
+      //     `${this.state.players[winner].name} remporte le pli avec ${this.state.currentTrick.cardsPlayed[winner].friendlyName} !`
+      //   );
+
+      //   if (currentRound !== this.state.currentRound) {
+      //     // New Round !
+      //     console.log('New Round !');
+      //     this.clock.setTimeout(() => {
+      //       const newRoundMaxBet = this.state.currentRound + 1;
+      //       this.broadcast('START_BETTING', {
+      //         maxBet: newRoundMaxBet,
+      //         topMessage: `Pari entre 0 et ${newRoundMaxBet}`,
+      //       });
+      //     }, 3_000);
+      //   }
+      // }
     });
 
     this.onMessage('*', (client: Client, message: any) => {

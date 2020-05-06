@@ -157,14 +157,26 @@ export class OnCardReceivedCommand extends Command<
     }
   }
 
-  computeNextPlayer(playerId: number, playerOrder: number[]) {
-    const id = playerOrder.indexOf(playerId);
-    const newPlayerId = (id + 1) % playerOrder.length;
-    let newPlayer = playerOrder[newPlayerId];
-    this.state.currentTrick.currentPlayer = newPlayer;
-  }
+  execute(obj: any) {
+    const deck = createDeck();
+    const card = deck[obj.cardId];
+    const trick = this.state.currentTrick;
+    const playerId = obj.playerId;
+    const round = this.state.game.remainingRounds[this.state.currentRound];
+    let suit = trick.suit;
 
-  trickHasEnded(playerOrder: number[]) {
+    this.removeCardFromPlayerHand(round, playerId, obj.cardId);
+    this.addCardtoCardsPlayed(playerId, card);
+    if (!suit) this.defineTrickSuit(card);
+  }
+}
+
+export class AfterCardPlayedCommand extends Command<
+  State,
+  { playerId: number }
+>{
+  trickHasEnded() {
+    const playerOrder = this.state.game.orderedPlayers;
     const cardsPlayed = this.state.currentTrick.cardsPlayed;
     const numberOfCardsPlayed = Object.keys(cardsPlayed).length;
     return playerOrder.length === numberOfCardsPlayed;
@@ -173,9 +185,9 @@ export class OnCardReceivedCommand extends Command<
   computeWinner(
     suit: string,
     cardsPlayed: MapSchema<Card>,
-    playerOrder: number[],
     round: Round
   ) {
+    const playerOrder = this.state.game.orderedPlayers;
     const cards = Object.values(cardsPlayed);
     const characters = cards.map((card) => card.character);
     const suits = cards.map((card) => card.suit);
@@ -241,7 +253,7 @@ export class OnCardReceivedCommand extends Command<
     this.state.currentTrick.winner = winner;
   }
 
-  /*
+   /*
     Who wins the trick? 
     1/ if the Skull King is played:
       - check if there's also a Mermaid:
@@ -259,6 +271,29 @@ export class OnCardReceivedCommand extends Command<
     /!\ TODO: beware of the Bloody Mary. Her versatility is not handled here!
   */
 
+  computeNextPlayer(playerId: number) {
+    const playerOrder = this.state.game.orderedPlayers;
+    const id = playerOrder.indexOf(playerId);
+    const newPlayerId = (id + 1) % playerOrder.length;
+    let newPlayer = playerOrder[newPlayerId];
+    this.state.currentTrick.currentPlayer = newPlayer;
+  }
+
+  execute(obj: any) {
+    const trick = this.state.currentTrick;
+    const suit = trick.suit;
+    const cardsPlayed = trick.cardsPlayed;
+    const round = this.state.game.remainingRounds[this.state.currentRound];
+
+    if (this.trickHasEnded()) {
+      this.computeWinner(suit, cardsPlayed, round);
+    } else {
+      this.computeNextPlayer(obj.playerId);
+    }
+  }
+}
+
+export class OnEndOfTrickCommand extends Command<State, {}> {
   startNextTrick(round: Round, trick: Trick) {
     const winner = trick.winner;
 
@@ -270,42 +305,19 @@ export class OnCardReceivedCommand extends Command<
     round.remainingTricks -= 1;
   }
 
-  startNextRound() {
-    const round = this.state.game.remainingRounds[this.state.currentRound];
+  startNextRound(round: Round) {
     const startingPlayer = round.startingPlayer;
     this.state.currentTrick = new Trick(1, startingPlayer);
   }
 
-  execute(obj: any) {
-    const deck = createDeck();
-    const card = deck[obj.cardId];
-    const trick = this.state.currentTrick;
-    const playerId = obj.playerId;
-    const playerOrder = this.state.game.orderedPlayers;
+  execute() {
     const round = this.state.game.remainingRounds[this.state.currentRound];
-    let suit = trick.suit;
+    const trick = this.state.currentTrick;
 
-    this.removeCardFromPlayerHand(round, playerId, obj.cardId);
-    this.addCardtoCardsPlayed(playerId, card);
-    if (!suit) this.defineTrickSuit(card);
-
-    if (this.trickHasEnded(playerOrder)) {
-      this.computeWinner(suit, trick.cardsPlayed, playerOrder, round);
-
-      console.log('=== round.remainingTricks ===', round.remainingTricks);
-      // start new trick unless no more remaining tricks
-      if (round.remainingTricks) {
-        this.startNextTrick(round, trick);
-      } else {
-        // compute round scores
-        // start new round
-        console.log('BEFORE INCREASE NEW ROUND');
-        this.state.currentRound += 1;
-        console.log('NEW ROUND', this.state.currentRound);
-        // this.startNextRound();
-      }
+    if (round.remainingTricks) {
+      this.startNextTrick(round, trick);
     } else {
-      this.computeNextPlayer(playerId, playerOrder);
+      this.startNextRound(round);
     }
   }
 }
