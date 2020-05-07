@@ -188,7 +188,7 @@ export class OnCardReceivedCommand extends Command<
 
     console.log('=====> Current Round', this.state.currentRound);
 
-    if (card.friendlyName === 'Bloody Mary') {
+    if (card.friendlyName === 'la Bloody Mary') {
       trick.bloodyMary = obj.bloodyMaryChoice;
     }
 
@@ -306,8 +306,6 @@ export class AfterCardPlayedCommand extends Command<
     6/ if the suits played include the trick suit, the highest card with the trick suit is the winner (translation: avoids a situation where all cards are flags)
 
     7/ else, first player is the winner (translation: all cards played are flags)
-
-    /!\ TODO: beware of the Bloody Mary. Her versatility is not handled here!
   */
 
   computeNextPlayer(playerId: number) {
