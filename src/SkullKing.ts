@@ -71,10 +71,24 @@ export class SkullKing extends Room<State> {
         this.state.game.remainingRounds[this.state.currentRound]
           .numberOfBets === playersCount
       ) {
+        const playerIds = Object.keys(
+          this.state.game.remainingRounds[this.state.currentRound].playersScore
+        );
+
+        const playersBet = playerIds.map((playedId) => {
+          this.state.game.remainingRounds[this.state.currentRound];
+          return {
+            playerId: playedId,
+            bet: this.state.game.remainingRounds[this.state.currentRound]
+              .playersScore[playedId].tricksBet,
+          };
+        });
+
         this.broadcast('START_ROUND', {
           currentPlayer: this.state.game.remainingRounds[
             this.state.currentRound
           ].startingPlayer,
+          playersBet: playersBet,
         });
       }
     });
@@ -134,7 +148,7 @@ export class SkullKing extends Room<State> {
             this.broadcast('NEXT_TRICK', 'Next Trick');
           }
         }, 1_000);
-        console.log("Trick number: ", this.state.currentTrick.id);
+        console.log('Trick number: ', this.state.currentTrick.id);
       }
 
       console.log('currentRound', currentRound);
