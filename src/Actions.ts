@@ -134,7 +134,7 @@ export class OnStartCommand extends Command<State, {}> {
 
 export class OnCardReceivedCommand extends Command<
   State,
-  { playerId: number; cardId: number }
+  { playerId: number; cardId: number, bloodyMaryChoice: string }
 > {
   removeCardFromPlayerHand(round: Round, playerId: number, cardId: number) {
     console.log('removeCardFromPlayerHand is called !');
@@ -183,11 +183,14 @@ export class OnCardReceivedCommand extends Command<
     const card = deck[obj.cardId];
     const trick = this.state.currentTrick;
     const playerId = obj.playerId;
-
     const round = this.state.game.remainingRounds[this.state.currentRound];
     let suit = trick.suit;
 
     console.log('=====> Current Round', this.state.currentRound);
+
+    if (card.friendlyName === 'Bloody Mary') {
+      trick.bloodyMary = obj.bloodyMaryChoice;
+    }
 
     this.removeCardFromPlayerHand(round, playerId, obj.cardId);
     this.addCardtoCardsPlayed(playerId, card);

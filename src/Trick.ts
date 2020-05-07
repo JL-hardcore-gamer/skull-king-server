@@ -21,6 +21,10 @@ export class Trick extends Schema {
   @type('number')
   winner: number;
 
+  @type('string')
+  bloodyMary: string;
+  // "pirate" or "escape"
+
   constructor(id:number, currentPlayer:number) {
     super();
 

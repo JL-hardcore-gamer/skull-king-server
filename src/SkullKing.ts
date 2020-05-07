@@ -1,6 +1,5 @@
 import { Room, Client } from 'colyseus';
 import { State } from './State';
-import { Card } from './Card';
 import { Dispatcher } from '@colyseus/command';
 import { prettyPrintObj } from './utils';
 import {
@@ -10,7 +9,6 @@ import {
   AfterCardPlayedCommand,
   OnEndOfTrickCommand,
 } from './Actions';
-import { Player } from './Player';
 const db = require('./db/database');
 
 export class SkullKing extends Room<State> {
@@ -88,6 +86,7 @@ export class SkullKing extends Room<State> {
       this.dispatcher.dispatch(new OnCardReceivedCommand(), {
         playerId: client.auth.ID,
         cardId: message.value,
+        bloodyMaryChoice: message.bloodyMaryChoice,
       });
 
       client.send('CARD_VALIDATED', { value: message.value });
