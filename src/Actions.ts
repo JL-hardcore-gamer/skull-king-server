@@ -294,6 +294,9 @@ export class AfterCardPlayedCommand extends Command<
       winner = findHighestCard('black');
     } else if (suits.includes(suit)) {
       winner = findHighestCard(suit);
+    } else if (characters.includes('Bloody Mary') &&
+               bloodyMaryChoice === 'escape') {
+      winner = findFirstCard('White Flag', 'Bloody Mary');
     } else {
       winner = findFirstCard('White Flag');
     }
@@ -320,7 +323,9 @@ export class AfterCardPlayedCommand extends Command<
 
     6/ if the suits played include the trick suit, the highest card with the trick suit is the winner (translation: avoids a situation where all cards are flags)
 
-    7/ else, first player is the winner (translation: all cards played are flags)
+    7/ if the Bloody Mary is played as a White flag, the first card that  is a bloody Mary or a White flag wins
+
+    8/ else, first player is the winner (translation: all cards played are flags)
   */
 
   computeNextPlayer(playerId: number) {
