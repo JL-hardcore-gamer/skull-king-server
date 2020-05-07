@@ -138,13 +138,34 @@ export class OnCardReceivedCommand extends Command<
 > {
   removeCardFromPlayerHand(round: Round, playerId: number, cardId: number) {
     console.log('removeCardFromPlayerHand is called !');
+
+    console.log('The userId is : ', playerId);
+    console.log('No of card', round.playersHand[playerId].hand.length);
+
     const hand = round.playersHand[playerId].hand;
+
+    console.log('remove cardId', cardId);
     const cardToRemoveIdx = hand.findIndex((card: Card) => card.id === cardId);
+    console.log('cardToRemoveIdx', cardToRemoveIdx);
+    console.log('===hand: ');
+    hand.forEach((card: any) => {
+      prettyPrintObj(card);
+    });
 
     hand.splice(cardToRemoveIdx, 1);
+
+    console.log('=== hand after ===: ');
+    hand.forEach((card: any) => {
+      prettyPrintObj(card);
+    });
   }
 
   addCardtoCardsPlayed(playerId: number, card: Card) {
+    console.log(
+      'addCardtoCardsPlayed is called !',
+      playerId,
+      card.friendlyName
+    );
     const cardsPlayed = this.state.currentTrick.cardsPlayed;
     cardsPlayed[playerId] = card;
   }
@@ -162,8 +183,11 @@ export class OnCardReceivedCommand extends Command<
     const card = deck[obj.cardId];
     const trick = this.state.currentTrick;
     const playerId = obj.playerId;
+
     const round = this.state.game.remainingRounds[this.state.currentRound];
     let suit = trick.suit;
+
+    console.log('=====> Current Round', this.state.currentRound);
 
     this.removeCardFromPlayerHand(round, playerId, obj.cardId);
     this.addCardtoCardsPlayed(playerId, card);
@@ -174,7 +198,7 @@ export class OnCardReceivedCommand extends Command<
 export class AfterCardPlayedCommand extends Command<
   State,
   { playerId: number }
->{
+> {
   trickHasEnded() {
     const playerOrder = this.state.game.orderedPlayers;
     const cardsPlayed = this.state.currentTrick.cardsPlayed;
@@ -182,11 +206,7 @@ export class AfterCardPlayedCommand extends Command<
     return playerOrder.length === numberOfCardsPlayed;
   }
 
-  computeWinner(
-    suit: string,
-    cardsPlayed: MapSchema<Card>,
-    round: Round
-  ) {
+  computeWinner(suit: string, cardsPlayed: MapSchema<Card>, round: Round) {
     const playerOrder = this.state.game.orderedPlayers;
     const cards = Object.values(cardsPlayed);
     const characters = cards.map((card) => card.character);
@@ -253,7 +273,7 @@ export class AfterCardPlayedCommand extends Command<
     this.state.currentTrick.winner = winner;
   }
 
-   /*
+  /*
     Who wins the trick? 
     1/ if the Skull King is played:
       - check if there's also a Mermaid:
