@@ -264,8 +264,10 @@ export class AfterCardPlayedCommand extends Command<
       winner = findFirstCard('Mermaid');
     } else if (suits.includes('black')) {
       winner = findHighestCard('black');
-    } else {
+    } else if (suits.includes(suit)) {
       winner = findHighestCard(suit);
+    } else {
+      winner = findFirstCard('White Flag');
     }
 
     // Add victory to PlayerRoundScore
@@ -286,7 +288,9 @@ export class AfterCardPlayedCommand extends Command<
 
     4/ if a black card is played, the highest black card is the winner
 
-    5/ else, the highest card with the trick suit is the winner
+    5/ if the suits played include the trick suit, the highest card with the trick suit is the winner (translation: avoids a situation where all cards are flags)
+
+    6/ else, first player is the winner (translation: all cards played are flags)
 
     /!\ TODO: beware of the Bloody Mary. Her versatility is not handled here!
   */
