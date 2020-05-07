@@ -8,6 +8,7 @@ import { PlayerHand } from './PlayerHand';
 import { shuffleArray, deck, prettyPrintObj, createDeck } from './utils';
 import { Trick } from './Trick';
 import { PlayerRoundScore } from './PlayerRoundScore';
+import { PlayerGameScore } from './PlayerGameScore';
 
 export class OnJoinCommand extends Command<
   State,
@@ -127,8 +128,22 @@ export class OnStartCommand extends Command<State, {}> {
     }
   }
 
+  prepareScoreboard() {
+    let playersId: string[] = Object.keys(this.state.players).map(
+      (playerId: string) => {
+        return playerId;
+      }
+    );
+    let scoreboard = this.state.game.scoreboard;
+
+    playersId.forEach((playerId) => {
+      scoreboard[playerId] = new PlayerGameScore;
+    });
+  }
+
   execute(obj: any) {
     this.prepareRounds();
+    this.prepareScoreboard();
   }
 }
 
@@ -339,6 +354,10 @@ export class OnEndOfTrickCommand extends Command<State, {}> {
     round.remainingTricks -= 1;
   }
 
+  computeRoundScore(round: Round) {
+
+  }
+
   startNextRound(round: Round) {
     console.log('==== startNextRound ====');
     const startingPlayer = round.startingPlayer;
@@ -351,11 +370,14 @@ export class OnEndOfTrickCommand extends Command<State, {}> {
   execute() {
     const round = this.state.game.remainingRounds[this.state.currentRound];
     const trick = this.state.currentTrick;
+    const playersScore = round.playersScore;
+    const gameScore = this.state.game.scoreboard;
 
     if (round.remainingTricks) {
       console.log("==== Next trick ====")
       this.startNextTrick(round, trick);
     } else {
+      this.computeRoundScore(round);
       this.startNextRound(round);
     }
   }

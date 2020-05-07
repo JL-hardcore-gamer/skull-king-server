@@ -41,6 +41,10 @@ export class SkullKing extends Room<State> {
 
       this.dispatcher.dispatch(new OnStartCommand(), {});
 
+      console.log("=== Scoreboard ===");
+      prettyPrintObj(this.state.game.scoreboard);
+      console.log("Score player 1:", this.state.game.scoreboard[1].totalScore);
+
       // Need to add a delay otherwise we do not have time to see the first message
       this.broadcast('START_BETTING', {
         maxBet: 1,
