@@ -316,10 +316,7 @@ export class AfterCardPlayedCommand extends Command<
 export class OnEndOfTrickCommand extends Command<State, {}> {
   startNextTrick(round: Round, trick: Trick) {
     const winner = trick.winner;
-
-    // v not useful I think v
     round.firstPlayer = winner;
-
     const nextID = trick.id + 1;
     this.state.currentTrick = new Trick(nextID, winner);
     round.remainingTricks -= 1;
@@ -339,6 +336,7 @@ export class OnEndOfTrickCommand extends Command<State, {}> {
     const trick = this.state.currentTrick;
 
     if (round.remainingTricks) {
+      console.log("==== Next trick ====")
       this.startNextTrick(round, trick);
     } else {
       this.startNextRound(round);

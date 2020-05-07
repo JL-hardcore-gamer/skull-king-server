@@ -112,14 +112,12 @@ export class SkullKing extends Room<State> {
           'TRICK_WINNER',
           `${this.state.players[winner].name} remporte le pli avec ${this.state.currentTrick.cardsPlayed[winner].friendlyName} !`
         );
-        this.broadcast('NEXT_TRICK', {
-          currentPlayer: this.state.game.remainingRounds[
-            this.state.currentRound
-          ].firstPlayer,
-        });
-      }
+        // for tests
+        this.broadcast(
+          'TOP_MESSAGE',
+          `${this.state.players[winner].name} remporte le pli avec ${this.state.currentTrick.cardsPlayed[winner].friendlyName} !`
+        );
 
-      if (winner) {
         this.clock.setTimeout(() => {
           this.dispatcher.dispatch(new OnEndOfTrickCommand(), {});
           if (currentRound !== this.state.currentRound) {
@@ -132,18 +130,16 @@ export class SkullKing extends Room<State> {
                 topMessage: `Pari entre 0 et ${newRoundMaxBet}`,
               });
             }, 3_000);
+          } else {
+            // next trick
+            this.broadcast('NEXT_TRICK', 'Next Trick');
           }
         }, 1_000);
+        console.log("Trick number: ", this.state.currentTrick.id);
       }
 
       console.log('currentRound', currentRound);
       console.log('this.state.currentRound', this.state.currentRound);
-
-      //   // for tests
-      //   this.broadcast(
-      //     'TOP_MESSAGE',
-      //     `${this.state.players[winner].name} remporte le pli avec ${this.state.currentTrick.cardsPlayed[winner].friendlyName} !`
-      //   );
     });
 
     this.onMessage('*', (client: Client, message: any) => {
