@@ -150,9 +150,24 @@ export class SkullKing extends Room<State> {
             console.log('New Round !');
             this.clock.setTimeout(() => {
               const newRoundMaxBet = this.state.currentRound + 1;
+
+              const playerIds = Object.keys(
+                this.state.game.remainingRounds[this.state.currentRound].playersScore
+              );
+
+              const scores = playerIds.map((playerId) => {
+                return {
+                  playerId: playerId,
+                  score: this.state.game.scoreboard[playerId].totalScore,
+                }
+              });
+
+              prettyPrintObj(scores);
+
               this.broadcast('START_BETTING', {
                 maxBet: newRoundMaxBet,
                 topMessage: `Pari entre 0 et ${newRoundMaxBet}`,
+                scores: scores,
               });
             }, 3_000);
           } else {
@@ -165,14 +180,6 @@ export class SkullKing extends Room<State> {
 
       console.log('currentRound', currentRound);
       console.log('this.state.currentRound', this.state.currentRound);
-
-      console.log("=== Scoreboard ===");
-      console.log("Score player 1:", this.state.game.scoreboard[1].totalScore);
-      console.log("Score player 2:", this.state.game.scoreboard[2].totalScore);
-      console.log("Player 1, 1st round, tricks bet: ", this.state.game.scoreboard[1].round0Bet);
-      console.log("Player 1, 1st round, points: ", this.state.game.scoreboard[1].round0Score);
-      console.log("Player 1, 2nd round, tricks bet: ", this.state.game.scoreboard[1].round1Bet);
-      console.log("Player 1, 2nd round, points: ", this.state.game.scoreboard[1].round1Score);
     });
 
     this.onMessage('*', (client: Client, message: any) => {
