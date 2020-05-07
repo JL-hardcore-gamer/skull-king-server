@@ -9,8 +9,8 @@ export class Game extends Schema {
   @type('number')
   id: number;
 
-  @type([Player])
-  winners = new ArraySchema<Player>();
+  @type(['string'])
+  winners = new ArraySchema<string>();
 
   @type('boolean')
   isFinished = false;

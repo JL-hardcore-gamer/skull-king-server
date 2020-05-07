@@ -8,6 +8,7 @@ import {
   OnCardReceivedCommand,
   AfterCardPlayedCommand,
   OnEndOfTrickCommand,
+  OnEndOfGameCommand,
 } from './Actions';
 const db = require('./db/database');
 
@@ -139,8 +140,10 @@ export class SkullKing extends Room<State> {
         this.clock.setTimeout(() => {
           this.dispatcher.dispatch(new OnEndOfTrickCommand(), {});
           if (this.state.currentRound === 10) {
-            this.broadcast('GAME_OVER', 'Winner');
+            this.dispatcher.dispatch(new OnEndOfGameCommand(), {});
+            this.broadcast('GAME_OVER', { winners: this.state.game.winners });
             console.log('--------Game over-------');
+            console.log('Winners:', this.state.game.winners);
           } else if (currentRound !== this.state.currentRound) {
             // New Round !
             console.log('New Round !');

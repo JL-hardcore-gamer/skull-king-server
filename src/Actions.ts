@@ -448,3 +448,27 @@ export class OnEndOfTrickCommand extends Command<State, {}> {
     }
   }
 }
+
+export class OnEndOfGameCommand extends Command<State, {}> {
+  execute() {
+    const gameScore = this.state.game.scoreboard;
+    const playerIds = Object.keys(
+      this.state.game.remainingRounds[9].playersScore
+    );
+    const scores = playerIds.map((playerId) => {
+      return gameScore[playerId].totalScore;
+    });
+    const winningScore = Math.max(...scores);
+    let winners: ArraySchema<string>;
+
+    playerIds.forEach((playerId) => {
+      let playerScore = gameScore[playerId].totalScore;
+      if (playerScore === winningScore) {
+        winners.push(playerId);
+      }
+    });
+    
+    this.state.game.winners = winners;
+    this.state.game.isFinished = true;
+  }
+}
