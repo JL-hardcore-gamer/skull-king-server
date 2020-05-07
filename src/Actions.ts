@@ -154,15 +154,12 @@ export class OnCardReceivedCommand extends Command<
   removeCardFromPlayerHand(round: Round, playerId: number, cardId: number) {
     console.log('removeCardFromPlayerHand is called !');
 
-    console.log('The userId is : ', playerId);
-    console.log('No of card', round.playersHand[playerId].hand.length);
-
     const hand = round.playersHand[playerId].hand;
 
     console.log('remove cardId', cardId);
     const cardToRemoveIdx = hand.findIndex((card: Card) => card.id === cardId);
     console.log('cardToRemoveIdx', cardToRemoveIdx);
-    console.log('===hand: ');
+    console.log('=== hand === ');
     hand.forEach((card: any) => {
       prettyPrintObj(card);
     });
@@ -200,8 +197,6 @@ export class OnCardReceivedCommand extends Command<
     const playerId = obj.playerId;
     const round = this.state.game.remainingRounds[this.state.currentRound];
     let suit = trick.suit;
-
-    console.log('=====> Current Round', this.state.currentRound);
 
     if (card.friendlyName === 'la Bloody Mary') {
       trick.bloodyMary = obj.bloodyMaryChoice;
@@ -404,7 +399,6 @@ export class OnEndOfTrickCommand extends Command<State, {}> {
       globalScore[`round${roundNumber}Bet`] = tricksBet;
     }
 
-    console.log("=== Before adding scores ===")
     players.forEach(playerId => {
       computePlayerScore(playerId);
     });

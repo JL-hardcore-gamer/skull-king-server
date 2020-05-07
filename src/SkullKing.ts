@@ -41,10 +41,6 @@ export class SkullKing extends Room<State> {
 
       this.dispatcher.dispatch(new OnStartCommand(), {});
 
-      console.log("=== Scoreboard ===");
-      prettyPrintObj(this.state.game.scoreboard);
-      console.log("Score player 1:", this.state.game.scoreboard[1].totalScore);
-
       // Need to add a delay otherwise we do not have time to see the first message
       this.broadcast('START_BETTING', {
         maxBet: 1,
@@ -221,18 +217,6 @@ export class SkullKing extends Room<State> {
       nickname: user.nickname,
       email: user.email,
     });
-    // For test
-    // this.dispatcher.dispatch(new OnJoinCommand(), {
-    //   id: 2,
-    //   nickname: 'Tony',
-    //   email: 'jl@test.com',
-    // });
-
-    // this.dispatcher.dispatch(new OnJoinCommand(), {
-    //   id: 3,
-    //   nickname: 'Test',
-    //   email: 'test@test.com',
-    // });
   }
 
   // When a client leaves the room
