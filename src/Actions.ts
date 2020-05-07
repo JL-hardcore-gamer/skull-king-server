@@ -354,7 +354,73 @@ export class OnEndOfTrickCommand extends Command<State, {}> {
     round.remainingTricks -= 1;
   }
 
-  computeRoundScore(round: Round) {
+  computeRoundScore(
+    round: Round,
+    playerScore: MapSchema<PlayerRoundScore>,
+    gameScore: MapSchema<PlayerGameScore>
+    ) {
+
+    const players = this.state.game.orderedPlayers;
+
+    // rounds start at 0
+    const roundNumber = round.id;
+
+    const computePlayerScore = (playerId: number) => {
+      const roundScore = playerScore[playerId];
+      const tricksBet = roundScore.tricksBet;
+      const tricksWon = roundScore.tricksWon;
+      const skullKingCaptured = roundScore.skullKingCaptured;
+      const piratesCaptured = roundScore.piratesCaptured; 
+
+      let globalScore = gameScore[playerId];
+      let difference: number;
+      let points = 0;
+
+      if (tricksBet === 0) {
+        if (tricksWon === tricksBet) {
+          points += (roundNumber + 1) * 10;
+        } else {
+          points -= (roundNumber + 1) * 10;
+        }
+
+      } else {
+        if (tricksWon === tricksBet) {
+          points += tricksBet * 20;
+
+          if (skullKingCaptured) points += 50;
+          if (piratesCaptured) points += piratesCaptured * 30;
+
+        } else {
+          difference = Math.abs(tricksWon - tricksBet);
+          points -= difference * 10;
+        }
+      }
+
+      globalScore.totalScore += points;
+    }
+
+    players.forEach(playerId => {
+      computePlayerScore(playerId);
+    });
+
+    /*
+      Compare tricksBet and tricksWon
+      - if equal & tricksBet > 0 : 
+      -- points = tricksBet * 20;
+      - if equal & tricksBet = 0:
+      -- points = (roundNumber + 1) * 10,
+      - if diff & tricksBet > 0:
+      -- points = (tricksWon - tricksBet) (absolute value) * - 10
+      - if diff & tricksBet = 0:
+      -- points = (roundNumber + 1) * - 10
+
+      if equal and skullkingcaptured:
+      - points += 50
+      
+      if equal and piratescaptured:
+      - points += 30 * number of pirates
+    */
+
 
   }
 
@@ -377,7 +443,7 @@ export class OnEndOfTrickCommand extends Command<State, {}> {
       console.log("==== Next trick ====")
       this.startNextTrick(round, trick);
     } else {
-      this.computeRoundScore(round);
+      this.computeRoundScore(round, playersScore, gameScore);
       this.startNextRound(round);
     }
   }
