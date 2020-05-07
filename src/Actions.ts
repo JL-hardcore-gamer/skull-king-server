@@ -214,16 +214,17 @@ export class AfterCardPlayedCommand extends Command<
     const cards = Object.values(cardsPlayed);
     const characters = cards.map((card) => card.character);
     const suits = cards.map((card) => card.suit);
+    const bloodyMaryChoice = this.state.currentTrick.bloodyMary;
     let winner: number;
 
-    const findFirstCard = function (character: string) {
+    const findFirstCard = function (...characters: string[]) {
       let card: Card;
       let playerID: number;
 
       for (let i = 0, length = playerOrder.length; i < length; i += 1) {
         playerID = playerOrder[i];
         card = cardsPlayed[playerID];
-        if (card.character === character) return playerID;
+        if (characters.includes(card.character)) return playerID;
       }
 
       return -1;
@@ -254,6 +255,12 @@ export class AfterCardPlayedCommand extends Command<
         round.playersScore[winner].skullKingCaptured += 1;
       } else {
         winner = findFirstCard('Skull King');
+
+        // Add BloodyMary to number of pirates captured, if she's a pirate
+        if (bloodyMaryChoice === "pirate") {
+          round.playersScore[winner].piratesCaptured += 1;
+        }
+
         // Add number of pirates captured to PlayerRoundScore
         let numberOfPirates: number;
         numberOfPirates = cards.reduce((total, card) => {
@@ -261,6 +268,9 @@ export class AfterCardPlayedCommand extends Command<
         }, 0);
         round.playersScore[winner].piratesCaptured += numberOfPirates;
       }
+    } else if (characters.includes('Bloody Mary') &&
+               bloodyMaryChoice === 'pirate') {
+      winner = findFirstCard('Pirate', 'Bloody Mary');
     } else if (characters.includes('Pirate')) {
       winner = findFirstCard('Pirate');
     } else if (characters.includes('Mermaid')) {
@@ -284,16 +294,18 @@ export class AfterCardPlayedCommand extends Command<
       - check if there's also a Mermaid:
       -- if it is, the 1st mermaid played is the winner
       -- else, the SK is the winner
+
+    2/ if the Bloody Mary is played as a pirate, the first card that is a pirate or a bloody Mary wins
     
-    2/ if a Pirate is played, the 1st pirate played is the winner
+    3/ if a Pirate is played, the 1st pirate played is the winner
 
-    3/ if a Mermaid is played, the 1st mermaid played is the winner
+    4/ if a Mermaid is played, the 1st mermaid played is the winner
 
-    4/ if a black card is played, the highest black card is the winner
+    5/ if a black card is played, the highest black card is the winner
 
-    5/ if the suits played include the trick suit, the highest card with the trick suit is the winner (translation: avoids a situation where all cards are flags)
+    6/ if the suits played include the trick suit, the highest card with the trick suit is the winner (translation: avoids a situation where all cards are flags)
 
-    6/ else, first player is the winner (translation: all cards played are flags)
+    7/ else, first player is the winner (translation: all cards played are flags)
 
     /!\ TODO: beware of the Bloody Mary. Her versatility is not handled here!
   */
