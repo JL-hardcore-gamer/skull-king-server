@@ -361,8 +361,6 @@ export class OnEndOfTrickCommand extends Command<State, {}> {
     ) {
 
     const players = this.state.game.orderedPlayers;
-
-    // rounds start at 0
     const roundNumber = round.id;
 
     const computePlayerScore = (playerId: number) => {
@@ -397,8 +395,11 @@ export class OnEndOfTrickCommand extends Command<State, {}> {
       }
 
       globalScore.totalScore += points;
+      globalScore[`round${roundNumber}Score`] = points;
+      globalScore[`round${roundNumber}Bet`] = tricksBet;
     }
 
+    console.log("=== Before adding scores ===")
     players.forEach(playerId => {
       computePlayerScore(playerId);
     });

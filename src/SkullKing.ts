@@ -150,6 +150,14 @@ export class SkullKing extends Room<State> {
 
       console.log('currentRound', currentRound);
       console.log('this.state.currentRound', this.state.currentRound);
+
+      console.log("=== Scoreboard ===");
+      console.log("Score player 1:", this.state.game.scoreboard[1].totalScore);
+      console.log("Score player 2:", this.state.game.scoreboard[2].totalScore);
+      console.log("Player 1, 1st round, tricks bet: ", this.state.game.scoreboard[1].round0Bet);
+      console.log("Player 1, 1st round, points: ", this.state.game.scoreboard[1].round0Score);
+      console.log("Player 1, 2nd round, tricks bet: ", this.state.game.scoreboard[1].round1Bet);
+      console.log("Player 1, 2nd round, points: ", this.state.game.scoreboard[1].round1Score);
     });
 
     this.onMessage('*', (client: Client, message: any) => {
