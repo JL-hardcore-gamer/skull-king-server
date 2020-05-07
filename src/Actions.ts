@@ -306,8 +306,12 @@ export class OnEndOfTrickCommand extends Command<State, {}> {
   }
 
   startNextRound(round: Round) {
+    console.log('==== startNextRound ====');
     const startingPlayer = round.startingPlayer;
     this.state.currentTrick = new Trick(1, startingPlayer);
+    this.state.currentRound += 1;
+    console.log('cardsPlayed :', this.state.currentTrick.cardsPlayed);
+    prettyPrintObj(this.state.currentTrick.cardsPlayed);
   }
 
   execute() {
