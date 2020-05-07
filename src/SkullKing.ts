@@ -108,9 +108,12 @@ export class SkullKing extends Room<State> {
       });
 
       client.send('CARD_VALIDATED', { value: message.value });
-      this.broadcast('TOP_MESSAGE', `${client.auth.nickname} a joué ${
-        this.state.currentTrick.cardsPlayed[client.auth.ID].friendlyName
-      }`);
+      this.broadcast(
+        'TOP_MESSAGE',
+        `${client.auth.nickname} a joué ${
+          this.state.currentTrick.cardsPlayed[client.auth.ID].friendlyName
+        }`
+      );
 
       console.log(
         `${client.auth.nickname} a joué ${
@@ -128,10 +131,9 @@ export class SkullKing extends Room<State> {
       console.log('Winner: ', winner);
 
       if (winner) {
-        this.broadcast(
-          'TRICK_WINNER',
-          `${this.state.players[winner].name} remporte le pli avec ${this.state.currentTrick.cardsPlayed[winner].friendlyName} !`
-        );
+        this.broadcast('TRICK_WINNER', {
+          value: this.state.players[winner].id,
+        });
         // for tests
         this.broadcast(
           'TOP_MESSAGE',
@@ -143,7 +145,6 @@ export class SkullKing extends Room<State> {
           if (this.state.currentRound === 10) {
             this.broadcast('GAME_OVER', 'Winner');
             console.log('--------Game over-------');
-
           } else if (currentRound !== this.state.currentRound) {
             // New Round !
             console.log('New Round !');
