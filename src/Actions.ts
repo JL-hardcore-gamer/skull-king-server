@@ -459,16 +459,14 @@ export class OnEndOfGameCommand extends Command<State, {}> {
       return gameScore[playerId].totalScore;
     });
     const winningScore = Math.max(...scores);
-    let winners: ArraySchema<string>;
 
     playerIds.forEach((playerId) => {
       let playerScore = gameScore[playerId].totalScore;
       if (playerScore === winningScore) {
-        winners.push(playerId);
+        this.state.game.winners.push(playerId);
       }
     });
     
-    this.state.game.winners = winners;
     this.state.game.isFinished = true;
   }
 }
