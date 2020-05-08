@@ -13,7 +13,6 @@ export class Round extends Schema {
   startingPlayer: number;
   // first player of the round, depends on the game order
 
-  // not useful I think
   @type('number')
   firstPlayer: number;
   // first player of the trick (except first trick), depends on the last trick winner

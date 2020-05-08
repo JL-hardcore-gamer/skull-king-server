@@ -220,7 +220,7 @@ export class AfterCardPlayedCommand extends Command<
   }
 
   computeWinner(suit: string, cardsPlayed: MapSchema<Card>, round: Round) {
-    const playerOrder = this.state.game.orderedPlayers;
+    const absolutePlayerOrder = this.state.game.orderedPlayers;
     const cards = Object.values(cardsPlayed);
     const characters = cards.map((card) => card.character);
     const suits = cards.map((card) => card.suit);
@@ -228,11 +228,31 @@ export class AfterCardPlayedCommand extends Command<
     let winner: number;
 
     const findFirstCard = function (...characters: string[]) {
+      const computeTrickPlayerOrder = () => {
+        const firstTrickPlayer = round.firstPlayer || round.startingPlayer;
+        const length = absolutePlayerOrder.length;
+        const startIdx = absolutePlayerOrder.findIndex((playerId => playerId === firstTrickPlayer));
+        let result: number[] = [];
+
+        // add the players after (and including) the starting trick player
+        for (let i = startIdx; i < length; i += 1) {
+          result.push(absolutePlayerOrder[i]);
+        }
+
+        // add the players before the starting trick player
+        for (let j = 0; j < startIdx; j += 1) {
+          result.push(absolutePlayerOrder[j]);
+        }
+
+        return result;
+      }
+
+      const trickPlayerOrder = computeTrickPlayerOrder();
       let card: Card;
       let playerID: number;
 
-      for (let i = 0, length = playerOrder.length; i < length; i += 1) {
-        playerID = playerOrder[i];
+      for (let i = 0, length = trickPlayerOrder.length; i < length; i += 1) {
+        playerID = trickPlayerOrder[i];
         card = cardsPlayed[playerID];
         if (characters.includes(card.character)) return playerID;
       }
