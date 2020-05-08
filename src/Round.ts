@@ -13,7 +13,6 @@ export class Round extends Schema {
   startingPlayer: number;
   // first player of the round, depends on the game order
 
-  // not useful I think
   @type('number')
   firstPlayer: number;
   // first player of the trick (except first trick), depends on the last trick winner
@@ -49,5 +48,10 @@ export class Round extends Schema {
     // when we start a round, we automatically start a trick
     // eg. at the start of round 2 (3rd round), there will be 2 tricks remaining after the current one
     this.remainingTricks = id;
+
+    // test
+    console.log("Round number:", this.id + 1);
+    console.log("Starting player:", this.startingPlayer);
+    console.log("--------")
   }
 }

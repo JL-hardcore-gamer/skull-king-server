@@ -112,16 +112,16 @@ export class OnStartCommand extends Command<State, {}> {
       this.state.game.remainingRounds.push(newRound);
 
       let orderedPlayers = this.state.game.orderedPlayers;
-      // /!\ I'm not sure  why this  is working, but it seems to work
       orderedPlayers.push(parseInt(roundStartingPlayer));
+    }
 
       // only keep one id for each player
+      let orderedPlayers = this.state.game.orderedPlayers;
       let numberOfPlayers = Object.keys(this.state.players).length;
       orderedPlayers.splice(numberOfPlayers);
 
       // /!\ TODO Must be created dynamically by the round
       this.state.currentTrick = new Trick(1, orderedPlayers[0]);
-    }
 
     if (this.state.game.remainingRounds.length > 0) {
       this.state.currentRound = this.state.game.remainingRounds[0].id;
@@ -152,32 +152,13 @@ export class OnCardReceivedCommand extends Command<
   { playerId: number; cardId: number, bloodyMaryChoice: string }
 > {
   removeCardFromPlayerHand(round: Round, playerId: number, cardId: number) {
-    console.log('removeCardFromPlayerHand is called !');
-
     const hand = round.playersHand[playerId].hand;
-
-    console.log('remove cardId', cardId);
     const cardToRemoveIdx = hand.findIndex((card: Card) => card.id === cardId);
-    console.log('cardToRemoveIdx', cardToRemoveIdx);
-    console.log('=== hand === ');
-    hand.forEach((card: any) => {
-      prettyPrintObj(card);
-    });
 
     hand.splice(cardToRemoveIdx, 1);
-
-    console.log('=== hand after ===: ');
-    hand.forEach((card: any) => {
-      prettyPrintObj(card);
-    });
   }
 
   addCardtoCardsPlayed(playerId: number, card: Card) {
-    console.log(
-      'addCardtoCardsPlayed is called !',
-      playerId,
-      card.friendlyName
-    );
     const cardsPlayed = this.state.currentTrick.cardsPlayed;
     cardsPlayed[playerId] = card;
   }
@@ -220,7 +201,7 @@ export class AfterCardPlayedCommand extends Command<
   }
 
   computeWinner(suit: string, cardsPlayed: MapSchema<Card>, round: Round) {
-    const playerOrder = this.state.game.orderedPlayers;
+    const absolutePlayerOrder = this.state.game.orderedPlayers;
     const cards = Object.values(cardsPlayed);
     const characters = cards.map((card) => card.character);
     const suits = cards.map((card) => card.suit);
@@ -228,11 +209,31 @@ export class AfterCardPlayedCommand extends Command<
     let winner: number;
 
     const findFirstCard = function (...characters: string[]) {
+      const computeTrickPlayerOrder = () => {
+        const firstTrickPlayer = round.firstPlayer || round.startingPlayer;
+        const length = absolutePlayerOrder.length;
+        const startIdx = absolutePlayerOrder.findIndex((playerId => playerId === firstTrickPlayer));
+        let result: number[] = [];
+
+        // add the players after (and including) the starting trick player
+        for (let i = startIdx; i < length; i += 1) {
+          result.push(absolutePlayerOrder[i]);
+        }
+
+        // add the players before the starting trick player
+        for (let j = 0; j < startIdx; j += 1) {
+          result.push(absolutePlayerOrder[j]);
+        }
+
+        return result;
+      }
+
+      const trickPlayerOrder = computeTrickPlayerOrder();
       let card: Card;
       let playerID: number;
 
-      for (let i = 0, length = playerOrder.length; i < length; i += 1) {
-        playerID = playerOrder[i];
+      for (let i = 0, length = trickPlayerOrder.length; i < length; i += 1) {
+        playerID = trickPlayerOrder[i];
         card = cardsPlayed[playerID];
         if (characters.includes(card.character)) return playerID;
       }
@@ -424,13 +425,11 @@ export class OnEndOfTrickCommand extends Command<State, {}> {
 
   }
 
-  startNextRound(round: Round) {
-    console.log('==== startNextRound ====');
-    const startingPlayer = round.startingPlayer;
-    this.state.currentTrick = new Trick(1, startingPlayer);
+  startNextRound() {   
     this.state.currentRound += 1;
-    console.log('cardsPlayed :', this.state.currentTrick.cardsPlayed);
-    prettyPrintObj(this.state.currentTrick.cardsPlayed);
+    const nextRound = this.state.game.remainingRounds[this.state.currentRound];
+    const startingPlayer = nextRound.startingPlayer;
+    this.state.currentTrick = new Trick(1, startingPlayer);
   }
 
   execute() {
@@ -440,11 +439,10 @@ export class OnEndOfTrickCommand extends Command<State, {}> {
     const gameScore = this.state.game.scoreboard;
 
     if (round.remainingTricks) {
-      console.log("==== Next trick ====")
       this.startNextTrick(round, trick);
     } else {
       this.computeRoundScore(round, playersScore, gameScore);
-      this.startNextRound(round);
+      this.startNextRound();
     }
   }
 }
