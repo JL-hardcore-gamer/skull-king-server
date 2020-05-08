@@ -171,7 +171,9 @@ export class SkullKing extends Room<State> {
             }, 3_000);
           } else {
             // next trick
-            this.broadcast('NEXT_TRICK', 'Next Trick');
+            this.clock.setTimeout(() => {
+              this.broadcast('NEXT_TRICK', 'Next Trick');
+            }, 2_000);
           }
         }, 1_000);
         console.log('Trick number: ', this.state.currentTrick.id);
