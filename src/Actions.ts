@@ -425,10 +425,11 @@ export class OnEndOfTrickCommand extends Command<State, {}> {
 
   }
 
-  startNextRound(round: Round) {
-    const startingPlayer = round.startingPlayer;
-    this.state.currentTrick = new Trick(1, startingPlayer);
+  startNextRound() {   
     this.state.currentRound += 1;
+    const nextRound = this.state.game.remainingRounds[this.state.currentRound];
+    const startingPlayer = nextRound.startingPlayer;
+    this.state.currentTrick = new Trick(1, startingPlayer);
   }
 
   execute() {
@@ -441,7 +442,7 @@ export class OnEndOfTrickCommand extends Command<State, {}> {
       this.startNextTrick(round, trick);
     } else {
       this.computeRoundScore(round, playersScore, gameScore);
-      this.startNextRound(round);
+      this.startNextRound();
     }
   }
 }

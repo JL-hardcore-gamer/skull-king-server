@@ -48,5 +48,10 @@ export class Round extends Schema {
     // when we start a round, we automatically start a trick
     // eg. at the start of round 2 (3rd round), there will be 2 tricks remaining after the current one
     this.remainingTricks = id;
+
+    // test
+    console.log("Round number:", this.id + 1);
+    console.log("Starting player:", this.startingPlayer);
+    console.log("--------")
   }
 }
