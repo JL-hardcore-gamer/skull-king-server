@@ -94,12 +94,7 @@ export class OnStartCommand extends Command<State, {}> {
           const cardIdx = deckToDeal.shift();
           // This is the only way to duplicate correctly a class object
           const newCard = deck[cardIdx].clone();
-          if (nbOfCardToDeal === 1 && playerId === '1') {
-            console.log('nbOfCardToDeal', nbOfCardToDeal);
-            playersHand[playerId].hand.push(deck[65].clone());
-          } else {
-            playersHand[playerId].hand.push(newCard);
-          }
+          playersHand[playerId].hand.push(newCard);
         }
       });
 
