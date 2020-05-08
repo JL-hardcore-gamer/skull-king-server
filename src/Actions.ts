@@ -94,7 +94,12 @@ export class OnStartCommand extends Command<State, {}> {
           const cardIdx = deckToDeal.shift();
           // This is the only way to duplicate correctly a class object
           const newCard = deck[cardIdx].clone();
-          playersHand[playerId].hand.push(newCard);
+          if (nbOfCardToDeal === 1 && playerId === '1') {
+            console.log('nbOfCardToDeal', nbOfCardToDeal);
+            playersHand[playerId].hand.push(deck[65].clone());
+          } else {
+            playersHand[playerId].hand.push(newCard);
+          }
         }
       });
 
@@ -115,13 +120,13 @@ export class OnStartCommand extends Command<State, {}> {
       orderedPlayers.push(parseInt(roundStartingPlayer));
     }
 
-      // only keep one id for each player
-      let orderedPlayers = this.state.game.orderedPlayers;
-      let numberOfPlayers = Object.keys(this.state.players).length;
-      orderedPlayers.splice(numberOfPlayers);
+    // only keep one id for each player
+    let orderedPlayers = this.state.game.orderedPlayers;
+    let numberOfPlayers = Object.keys(this.state.players).length;
+    orderedPlayers.splice(numberOfPlayers);
 
-      // /!\ TODO Must be created dynamically by the round
-      this.state.currentTrick = new Trick(1, orderedPlayers[0]);
+    // /!\ TODO Must be created dynamically by the round
+    this.state.currentTrick = new Trick(1, orderedPlayers[0]);
 
     if (this.state.game.remainingRounds.length > 0) {
       this.state.currentRound = this.state.game.remainingRounds[0].id;
@@ -137,7 +142,7 @@ export class OnStartCommand extends Command<State, {}> {
     let scoreboard = this.state.game.scoreboard;
 
     playersId.forEach((playerId) => {
-      scoreboard[playerId] = new PlayerGameScore;
+      scoreboard[playerId] = new PlayerGameScore();
     });
   }
 
@@ -149,7 +154,7 @@ export class OnStartCommand extends Command<State, {}> {
 
 export class OnCardReceivedCommand extends Command<
   State,
-  { playerId: number; cardId: number, bloodyMaryChoice: string }
+  { playerId: number; cardId: number; bloodyMaryChoice: string }
 > {
   removeCardFromPlayerHand(round: Round, playerId: number, cardId: number) {
     const hand = round.playersHand[playerId].hand;
@@ -181,6 +186,10 @@ export class OnCardReceivedCommand extends Command<
 
     if (card.friendlyName === 'la Bloody Mary') {
       trick.bloodyMary = obj.bloodyMaryChoice;
+      console.log(`========= ROUND ${this.state.currentRound} ========`);
+      console.log('============================');
+      console.log('==== Change Bloody Mary ====', obj.bloodyMaryChoice);
+      console.log('============================');
     }
 
     this.removeCardFromPlayerHand(round, playerId, obj.cardId);
@@ -212,7 +221,9 @@ export class AfterCardPlayedCommand extends Command<
       const computeTrickPlayerOrder = () => {
         const firstTrickPlayer = round.firstPlayer || round.startingPlayer;
         const length = absolutePlayerOrder.length;
-        const startIdx = absolutePlayerOrder.findIndex((playerId => playerId === firstTrickPlayer));
+        const startIdx = absolutePlayerOrder.findIndex(
+          (playerId) => playerId === firstTrickPlayer
+        );
         let result: number[] = [];
 
         // add the players after (and including) the starting trick player
@@ -226,7 +237,7 @@ export class AfterCardPlayedCommand extends Command<
         }
 
         return result;
-      }
+      };
 
       const trickPlayerOrder = computeTrickPlayerOrder();
       let card: Card;
@@ -268,7 +279,7 @@ export class AfterCardPlayedCommand extends Command<
         winner = findFirstCard('Skull King');
 
         // Add BloodyMary to number of pirates captured, if she's a pirate
-        if (bloodyMaryChoice === "pirate") {
+        if (bloodyMaryChoice === 'pirate') {
           round.playersScore[winner].piratesCaptured += 1;
         }
 
@@ -279,8 +290,10 @@ export class AfterCardPlayedCommand extends Command<
         }, 0);
         round.playersScore[winner].piratesCaptured += numberOfPirates;
       }
-    } else if (characters.includes('Bloody Mary') &&
-               bloodyMaryChoice === 'pirate') {
+    } else if (
+      characters.includes('Bloody Mary') &&
+      bloodyMaryChoice === 'pirate'
+    ) {
       winner = findFirstCard('Pirate', 'Bloody Mary');
     } else if (characters.includes('Pirate')) {
       winner = findFirstCard('Pirate');
@@ -290,8 +303,10 @@ export class AfterCardPlayedCommand extends Command<
       winner = findHighestCard('black');
     } else if (suits.includes(suit)) {
       winner = findHighestCard(suit);
-    } else if (characters.includes('Bloody Mary') &&
-               bloodyMaryChoice === 'escape') {
+    } else if (
+      characters.includes('Bloody Mary') &&
+      bloodyMaryChoice === 'escape'
+    ) {
       winner = findFirstCard('White Flag', 'Bloody Mary');
     } else {
       winner = findFirstCard('White Flag');
@@ -359,8 +374,7 @@ export class OnEndOfTrickCommand extends Command<State, {}> {
     round: Round,
     playerScore: MapSchema<PlayerRoundScore>,
     gameScore: MapSchema<PlayerGameScore>
-    ) {
-
+  ) {
     const players = this.state.game.orderedPlayers;
     const roundNumber = round.id;
 
@@ -369,7 +383,7 @@ export class OnEndOfTrickCommand extends Command<State, {}> {
       const tricksBet = roundScore.tricksBet;
       const tricksWon = roundScore.tricksWon;
       const skullKingCaptured = roundScore.skullKingCaptured;
-      const piratesCaptured = roundScore.piratesCaptured; 
+      const piratesCaptured = roundScore.piratesCaptured;
 
       let globalScore = gameScore[playerId];
       let difference: number;
@@ -381,14 +395,12 @@ export class OnEndOfTrickCommand extends Command<State, {}> {
         } else {
           points -= (roundNumber + 1) * 10;
         }
-
       } else {
         if (tricksWon === tricksBet) {
           points += tricksBet * 20;
 
           if (skullKingCaptured) points += 50;
           if (piratesCaptured) points += piratesCaptured * 30;
-
         } else {
           difference = Math.abs(tricksWon - tricksBet);
           points -= difference * 10;
@@ -398,9 +410,9 @@ export class OnEndOfTrickCommand extends Command<State, {}> {
       globalScore.totalScore += points;
       globalScore[`round${roundNumber}Score`] = points;
       globalScore[`round${roundNumber}Bet`] = tricksBet;
-    }
+    };
 
-    players.forEach(playerId => {
+    players.forEach((playerId) => {
       computePlayerScore(playerId);
     });
 
@@ -421,11 +433,9 @@ export class OnEndOfTrickCommand extends Command<State, {}> {
       if equal and piratescaptured:
       - points += 30 * number of pirates
     */
-
-
   }
 
-  startNextRound() {   
+  startNextRound() {
     this.state.currentRound += 1;
     const nextRound = this.state.game.remainingRounds[this.state.currentRound];
     const startingPlayer = nextRound.startingPlayer;
@@ -439,6 +449,7 @@ export class OnEndOfTrickCommand extends Command<State, {}> {
     const gameScore = this.state.game.scoreboard;
 
     if (round.remainingTricks) {
+      console.log('==== Next trick ====');
       this.startNextTrick(round, trick);
     } else {
       this.computeRoundScore(round, playersScore, gameScore);
@@ -464,7 +475,7 @@ export class OnEndOfGameCommand extends Command<State, {}> {
         this.state.game.winners.push(playerId);
       }
     });
-    
+
     this.state.game.isFinished = true;
   }
 }

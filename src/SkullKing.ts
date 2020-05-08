@@ -87,6 +87,21 @@ export class SkullKing extends Room<State> {
           ].startingPlayer,
           playersBet: playersBet,
         });
+
+        this.broadcast('TOP_MESSAGE', `Nouveau pli...`);
+      } else {
+        let msg = `1 joueur prêt...`;
+
+        if (
+          this.state.game.remainingRounds[this.state.currentRound]
+            .numberOfBets > 1
+        ) {
+          msg = `${
+            this.state.game.remainingRounds[this.state.currentRound]
+              .numberOfBets
+          } joueurs prêts...`;
+        }
+        this.broadcast('TOP_MESSAGE', msg);
       }
     });
 
@@ -99,12 +114,23 @@ export class SkullKing extends Room<State> {
       });
 
       client.send('CARD_VALIDATED', { value: message.value });
-      this.broadcast(
-        'TOP_MESSAGE',
-        `${client.auth.nickname} a joué ${
-          this.state.currentTrick.cardsPlayed[client.auth.ID].friendlyName
-        }`
-      );
+
+      // Bloody Mary
+      if (this.state.currentTrick.cardsPlayed[client.auth.ID].id === 65) {
+        this.broadcast(
+          'TOP_MESSAGE',
+          `${client.auth.nickname} a joué ${
+            this.state.currentTrick.cardsPlayed[client.auth.ID].friendlyName
+          } en tant que ${this.state.currentTrick.bloodyMary}`
+        );
+      } else {
+        this.broadcast(
+          'TOP_MESSAGE',
+          `${client.auth.nickname} a joué ${
+            this.state.currentTrick.cardsPlayed[client.auth.ID].friendlyName
+          }`
+        );
+      }
 
       this.dispatcher.dispatch(new AfterCardPlayedCommand(), {
         playerId: client.auth.ID,
@@ -117,10 +143,17 @@ export class SkullKing extends Room<State> {
           value: this.state.players[winner].id,
         });
         // for tests
-        this.broadcast(
-          'TOP_MESSAGE',
-          `${this.state.players[winner].name} remporte le pli avec ${this.state.currentTrick.cardsPlayed[winner].friendlyName} !`
-        );
+        if (this.state.currentTrick.cardsPlayed[client.auth.ID].id === 65) {
+          this.broadcast(
+            'TOP_MESSAGE',
+            `${this.state.players[winner].name} remporte le pli avec ${this.state.currentTrick.cardsPlayed[winner].friendlyName} en tant que ${this.state.currentTrick.bloodyMary} !`
+          );
+        } else {
+          this.broadcast(
+            'TOP_MESSAGE',
+            `${this.state.players[winner].name} remporte le pli avec ${this.state.currentTrick.cardsPlayed[winner].friendlyName} !`
+          );
+        }
 
         this.clock.setTimeout(() => {
           this.dispatcher.dispatch(new OnEndOfTrickCommand(), {});
@@ -136,14 +169,15 @@ export class SkullKing extends Room<State> {
               const newRoundMaxBet = this.state.currentRound + 1;
 
               const playerIds = Object.keys(
-                this.state.game.remainingRounds[this.state.currentRound].playersScore
+                this.state.game.remainingRounds[this.state.currentRound]
+                  .playersScore
               );
 
               const scores = playerIds.map((playerId) => {
                 return {
                   playerId: playerId,
                   score: this.state.game.scoreboard[playerId].totalScore,
-                }
+                };
               });
 
               prettyPrintObj(scores);
@@ -155,6 +189,7 @@ export class SkullKing extends Room<State> {
               });
             }, 3_000);
           } else {
+            this.broadcast('TOP_MESSAGE', 'Préparation du nouveau pli...');
             // next trick
             this.clock.setTimeout(() => {
               this.broadcast('NEXT_TRICK', 'Next Trick');
