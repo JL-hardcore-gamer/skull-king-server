@@ -152,32 +152,13 @@ export class OnCardReceivedCommand extends Command<
   { playerId: number; cardId: number, bloodyMaryChoice: string }
 > {
   removeCardFromPlayerHand(round: Round, playerId: number, cardId: number) {
-    console.log('removeCardFromPlayerHand is called !');
-
     const hand = round.playersHand[playerId].hand;
-
-    console.log('remove cardId', cardId);
     const cardToRemoveIdx = hand.findIndex((card: Card) => card.id === cardId);
-    console.log('cardToRemoveIdx', cardToRemoveIdx);
-    console.log('=== hand === ');
-    hand.forEach((card: any) => {
-      prettyPrintObj(card);
-    });
 
     hand.splice(cardToRemoveIdx, 1);
-
-    console.log('=== hand after ===: ');
-    hand.forEach((card: any) => {
-      prettyPrintObj(card);
-    });
   }
 
   addCardtoCardsPlayed(playerId: number, card: Card) {
-    console.log(
-      'addCardtoCardsPlayed is called !',
-      playerId,
-      card.friendlyName
-    );
     const cardsPlayed = this.state.currentTrick.cardsPlayed;
     cardsPlayed[playerId] = card;
   }
@@ -445,12 +426,9 @@ export class OnEndOfTrickCommand extends Command<State, {}> {
   }
 
   startNextRound(round: Round) {
-    console.log('==== startNextRound ====');
     const startingPlayer = round.startingPlayer;
     this.state.currentTrick = new Trick(1, startingPlayer);
     this.state.currentRound += 1;
-    console.log('cardsPlayed :', this.state.currentTrick.cardsPlayed);
-    prettyPrintObj(this.state.currentTrick.cardsPlayed);
   }
 
   execute() {
@@ -460,7 +438,6 @@ export class OnEndOfTrickCommand extends Command<State, {}> {
     const gameScore = this.state.game.scoreboard;
 
     if (round.remainingTricks) {
-      console.log("==== Next trick ====")
       this.startNextTrick(round, trick);
     } else {
       this.computeRoundScore(round, playersScore, gameScore);

@@ -33,10 +33,6 @@ export class SkullKing extends Room<State> {
 
     // All the logic will be here
     this.onMessage('START_GAME', (client, message) => {
-      console.log('message received:', message);
-      console.log('client:', client.auth.nickname);
-      console.log('client ID:', client.auth.ID);
-
       this.broadcast('GAME_STARTED', `${client.auth.nickname} start the game`);
       this.broadcast('TOP_MESSAGE', `Préparation de la partie`);
 
@@ -95,8 +91,6 @@ export class SkullKing extends Room<State> {
     });
 
     this.onMessage('PLAY_CARD', (client, message) => {
-      console.log('player array:', this.state.game.orderedPlayers);
-      console.log('Current: ', this.state.currentTrick.currentPlayer);
       let currentRound = this.state.currentRound;
       this.dispatcher.dispatch(new OnCardReceivedCommand(), {
         playerId: client.auth.ID,
@@ -112,20 +106,11 @@ export class SkullKing extends Room<State> {
         }`
       );
 
-      console.log(
-        `${client.auth.nickname} a joué ${
-          this.state.currentTrick.cardsPlayed[client.auth.ID].friendlyName
-        }`
-      );
-      console.log('The suit is: ', this.state.currentTrick.suit);
-      console.log('Current: ', this.state.currentTrick.currentPlayer);
-
       this.dispatcher.dispatch(new AfterCardPlayedCommand(), {
         playerId: client.auth.ID,
       });
 
       let winner = this.state.currentTrick.winner;
-      console.log('Winner: ', winner);
 
       if (winner) {
         this.broadcast('TRICK_WINNER', {
@@ -174,11 +159,7 @@ export class SkullKing extends Room<State> {
             this.broadcast('NEXT_TRICK', 'Next Trick');
           }
         }, 1_000);
-        console.log('Trick number: ', this.state.currentTrick.id);
       }
-
-      console.log('currentRound', currentRound);
-      console.log('this.state.currentRound', this.state.currentRound);
     });
 
     this.onMessage('*', (client: Client, message: any) => {
