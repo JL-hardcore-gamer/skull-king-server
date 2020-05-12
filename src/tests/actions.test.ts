@@ -1,5 +1,10 @@
 import { MapSchema, ArraySchema } from '@colyseus/schema';
-import { findHighestCard, createDeck, computeTrickPlayerOrder } from '../utils';
+import {
+  findHighestCard,
+  createDeck,
+  computeTrickPlayerOrder,
+  findFirstCard,
+} from '../utils';
 import { Card } from '../Card';
 import { Round } from '../Round';
 import { PlayerHand } from '../PlayerHand';
@@ -48,6 +53,46 @@ describe('computeTrickPlayerOrder()', () => {
 
     expect(computeTrickPlayerOrder(round, absolutePlayerOrder)).toEqual(
       trickPlayerOrder2
+    );
+  });
+});
+
+describe('findFirstCard()', () => {
+  const deck = createDeck();
+  const trickPlayerOrder = [5, 3, 4, 2, 1];
+  let cardsPlayed = new MapSchema<Card>();
+
+  test('Find first mermaid played', () => {
+    const cards = [deck[53], deck[13], deck[54], deck[24], deck[41], deck[65]];
+    // sirène, 1 bleu, sirène, 12 bleu, 3 noir, bloody Mary
+    trickPlayerOrder.forEach((playerId, idx) => {
+      cardsPlayed[playerId] = cards[idx];
+    });
+
+    expect(findFirstCard(trickPlayerOrder, cardsPlayed, 'Mermaid'));
+  });
+
+  test('Find first pirate played, with Bloody Mary', () => {
+    const cards = [deck[53], deck[58], deck[54], deck[57], deck[41], deck[65]];
+    // sirène, pirate, sirène, pirate, 3 noir, bloody Mary
+    trickPlayerOrder.forEach((playerId, idx) => {
+      cardsPlayed[playerId] = cards[idx];
+    });
+
+    expect(
+      findFirstCard(trickPlayerOrder, cardsPlayed, 'Pirate', 'Bloody Mary')
+    );
+  });
+
+  test('Find first pirate played, with Bloody Mary as a winner', () => {
+    const cards = [deck[65], deck[58], deck[54], deck[57], deck[41], deck[58]];
+    // bloody Mary, pirate, sirène, pirate, 3 noir, pirate
+    trickPlayerOrder.forEach((playerId, idx) => {
+      cardsPlayed[playerId] = cards[idx];
+    });
+
+    expect(
+      findFirstCard(trickPlayerOrder, cardsPlayed, 'Pirate', 'Bloody Mary')
     );
   });
 });

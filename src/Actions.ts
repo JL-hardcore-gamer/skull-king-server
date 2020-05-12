@@ -12,6 +12,7 @@ import {
   createDeck,
   findHighestCard,
   computeTrickPlayerOrder,
+  findFirstCard,
 } from './utils';
 import { Trick } from './Trick';
 import { PlayerRoundScore } from './PlayerRoundScore';
@@ -213,36 +214,23 @@ export class AfterCardPlayedCommand extends Command<
 
   computeWinner(suit: string, cardsPlayed: MapSchema<Card>, round: Round) {
     const absolutePlayerOrder = this.state.game.orderedPlayers;
+    const trickPlayerOrder = computeTrickPlayerOrder(
+      round,
+      absolutePlayerOrder
+    );
     const cards = Object.values(cardsPlayed);
     const characters = cards.map((card) => card.character);
     const suits = cards.map((card) => card.suit);
     const bloodyMaryChoice = this.state.currentTrick.bloodyMary;
     let winner: number;
 
-    const findFirstCard = function (...characters: string[]) {
-      const trickPlayerOrder = computeTrickPlayerOrder(
-        round,
-        absolutePlayerOrder
-      );
-      let card: Card;
-      let playerID: number;
-
-      for (let i = 0, length = trickPlayerOrder.length; i < length; i += 1) {
-        playerID = trickPlayerOrder[i];
-        card = cardsPlayed[playerID];
-        if (characters.includes(card.character)) return playerID;
-      }
-
-      return -1;
-    };
-
     if (characters.includes('Skull King')) {
       if (characters.includes('Mermaid')) {
-        winner = findFirstCard('Mermaid');
+        winner = findFirstCard(trickPlayerOrder, cardsPlayed, 'Mermaid');
         // Add skull king captured to PlayerRoundScore
         round.playersScore[winner].skullKingCaptured += 1;
       } else {
-        winner = findFirstCard('Skull King');
+        winner = findFirstCard(trickPlayerOrder, cardsPlayed, 'Skull King');
 
         // Add BloodyMary to number of pirates captured, if she's a pirate
         if (bloodyMaryChoice === 'pirate') {
@@ -260,11 +248,16 @@ export class AfterCardPlayedCommand extends Command<
       characters.includes('Bloody Mary') &&
       bloodyMaryChoice === 'pirate'
     ) {
-      winner = findFirstCard('Pirate', 'Bloody Mary');
+      winner = findFirstCard(
+        trickPlayerOrder,
+        cardsPlayed,
+        'Pirate',
+        'Bloody Mary'
+      );
     } else if (characters.includes('Pirate')) {
-      winner = findFirstCard('Pirate');
+      winner = findFirstCard(trickPlayerOrder, cardsPlayed, 'Pirate');
     } else if (characters.includes('Mermaid')) {
-      winner = findFirstCard('Mermaid');
+      winner = findFirstCard(trickPlayerOrder, cardsPlayed, 'Mermaid');
     } else if (suits.includes('black')) {
       winner = findHighestCard('black', cardsPlayed);
     } else if (suits.includes(suit)) {
@@ -273,9 +266,14 @@ export class AfterCardPlayedCommand extends Command<
       characters.includes('Bloody Mary') &&
       bloodyMaryChoice === 'escape'
     ) {
-      winner = findFirstCard('White Flag', 'Bloody Mary');
+      winner = findFirstCard(
+        trickPlayerOrder,
+        cardsPlayed,
+        'White Flag',
+        'Bloody Mary'
+      );
     } else {
-      winner = findFirstCard('White Flag');
+      winner = findFirstCard(trickPlayerOrder, cardsPlayed, 'White Flag');
     }
 
     // Add victory to PlayerRoundScore

@@ -108,6 +108,23 @@ const computeTrickPlayerOrder = (
   return result;
 };
 
+const findFirstCard = function (
+  trickPlayerOrder: number[],
+  cardsPlayed: MapSchema<Card>,
+  ...characters: string[]
+) {
+  let card: Card;
+  let playerID: number;
+
+  for (let i = 0, length = trickPlayerOrder.length; i < length; i += 1) {
+    playerID = trickPlayerOrder[i];
+    card = cardsPlayed[playerID];
+    if (characters.includes(card.character)) return playerID;
+  }
+
+  return -1;
+};
+
 export {
   prettyPrintObj,
   shuffleArray,
@@ -115,4 +132,5 @@ export {
   createDeck,
   findHighestCard,
   computeTrickPlayerOrder,
+  findFirstCard,
 };
