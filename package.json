@@ -6,12 +6,7 @@
   "scripts": {
     "start": "nodemon",
     "loadtest": "colyseus-loadtest --room SkullKing --numClients 10",
-    "jest": "jest"
-  },
-  "jest": {
-    "transform": {
-      "^.+\\.jsx?$": "babel-jest"
-    }
+    "test": "jest"
   },
   "author": "",
   "license": "UNLICENSED",
@@ -20,15 +15,16 @@
   },
   "homepage": "https://github.com/colyseus/create-colyseus#readme",
   "devDependencies": {
-    "@babel/preset-env": "^7.9.6",
-    "@babel/preset-typescript": "^7.9.0",
     "@colyseus/loadtest": "^0.12.0",
     "@types/cors": "^2.8.6",
     "@types/express": "^4.17.1",
-    "babel-jest": "^26.0.1",
+    "@types/jest": "^25.2.1",
+    "@types/node": "^13.13.5",
+    "jest": "^25.5.4",
     "nodemon": "^2.0.3",
+    "ts-jest": "^25.5.1",
     "ts-node": "^8.1.0",
-    "typescript": "^3.4.5"
+    "typescript": "^3.8.3"
   },
   "dependencies": {
     "@colyseus/command": "^0.1.5",
