@@ -6,9 +6,10 @@ export function requestJoinOptions (this: Client, i: number) {
 
 export function onJoin(this: Room) {
     console.log(this.sessionId, "joined.");
+    this.send({ sessionId: this.sessionId });
 }
 
-export function onMessage(this: Room, message) {
+export function onMessage(this: Room, message: any) {
     console.log(this.sessionId, "received:", message);
 }
 
@@ -16,10 +17,10 @@ export function onLeave(this: Room) {
     console.log(this.sessionId, "left.");
 }
 
-export function onError(this: Room, err) {
+export function onError(this: Room, err: any) {
     console.log(this.sessionId, "!! ERROR !!", err.message);
 }
 
-export function onStateChange(this: Room, state) {
+export function onStateChange(this: Room, state: any) {
     console.log(this.sessionId, "new state:", state);
 }

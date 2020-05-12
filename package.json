@@ -4,7 +4,8 @@
   "description": "npm init template for bootstraping an empty Colyseus project",
   "main": "lib/index.js",
   "scripts": {
-    "start": "nodemon"
+    "start": "nodemon",
+    "test": "colyseus-loadtest --room SkullKing --numClients 10"
   },
   "author": "",
   "license": "UNLICENSED",
