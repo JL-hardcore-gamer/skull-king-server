@@ -1,11 +1,11 @@
 import { State } from './State';
 import { Player } from './Player';
 import { Card } from './Card';
-import { Schema, ArraySchema, MapSchema } from '@colyseus/schema';
+import { MapSchema } from '@colyseus/schema';
 import { Command } from '@colyseus/command';
 import { Round } from './Round';
 import { PlayerHand } from './PlayerHand';
-import { shuffleArray, deck, prettyPrintObj, createDeck } from './utils';
+import { shuffleArray, deck, prettyPrintObj, createDeck, findHighestCard } from './utils';
 import { Trick } from './Trick';
 import { PlayerRoundScore } from './PlayerRoundScore';
 import { PlayerGameScore } from './PlayerGameScore';
@@ -247,24 +247,6 @@ export class AfterCardPlayedCommand extends Command<
       return -1;
     };
 
-    const findHighestCard = (givenSuit: string) => {
-      let winner = -1;
-      let highestValue = 0;
-      let card: Card;
-      let cardValue: number;
-
-      for (let playerID in cardsPlayed) {
-        card = cardsPlayed[playerID];
-        cardValue = Number(card.character);
-        if (card.suit === givenSuit && cardValue > highestValue) {
-          winner = Number(playerID);
-          highestValue = cardValue;
-        }
-      }
-
-      return winner;
-    };
-
     if (characters.includes('Skull King')) {
       if (characters.includes('Mermaid')) {
         winner = findFirstCard('Mermaid');
@@ -295,9 +277,9 @@ export class AfterCardPlayedCommand extends Command<
     } else if (characters.includes('Mermaid')) {
       winner = findFirstCard('Mermaid');
     } else if (suits.includes('black')) {
-      winner = findHighestCard('black');
+      winner = findHighestCard('black', cardsPlayed);
     } else if (suits.includes(suit)) {
-      winner = findHighestCard(suit);
+      winner = findHighestCard(suit, cardsPlayed);
     } else if (
       characters.includes('Bloody Mary') &&
       bloodyMaryChoice === 'escape'

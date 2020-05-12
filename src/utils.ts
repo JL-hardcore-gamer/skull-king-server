@@ -1,4 +1,5 @@
 import { Card } from './Card';
+import { MapSchema } from '@colyseus/schema';
 
 const prettyPrintObj = (obj: any) => {
   const allKeys = Object.keys(obj);
@@ -64,4 +65,22 @@ const createDeck = (): Array<Card> => {
 
 const deck = createDeck();
 
-export { prettyPrintObj, shuffleArray, deck, createDeck };
+const findHighestCard = (givenSuit: string, cardsPlayed: MapSchema<Card>) => {
+  let winner = -1;
+  let highestValue = 0;
+  let card: Card;
+  let cardValue: number;
+
+  for (let playerID in cardsPlayed) {
+    card = cardsPlayed[playerID];
+    cardValue = Number(card.character);
+    if (card.suit === givenSuit && cardValue > highestValue) {
+      winner = Number(playerID);
+      highestValue = cardValue;
+    }
+  }
+
+  return winner;
+};
+
+export { prettyPrintObj, shuffleArray, deck, createDeck, findHighestCard };
