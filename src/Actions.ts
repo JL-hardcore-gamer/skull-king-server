@@ -213,16 +213,22 @@ export class AfterCardPlayedCommand extends Command<
   }
 
   computeWinner(suit: string, cardsPlayed: MapSchema<Card>, round: Round) {
+    // Patrick: Move Up Begin
     const absolutePlayerOrder = this.state.game.orderedPlayers;
     const trickPlayerOrder = computeTrickPlayerOrder(
       round,
       absolutePlayerOrder
     );
+    // Patrick: Move Up End ? Pass trickPlayerOrder as an arg
+    // Patrick: Don't need Round then
     const cards = Object.values(cardsPlayed);
     const characters = cards.map((card) => card.character);
     const suits = cards.map((card) => card.suit);
     const bloodyMaryChoice = this.state.currentTrick.bloodyMary;
     let winner: number;
+
+    // Patrick: let skullKingCaptured = 0
+    // Patrick: let piratesCaptured = 0
 
     if (characters.includes('Skull King')) {
       if (characters.includes('Mermaid')) {
@@ -232,6 +238,7 @@ export class AfterCardPlayedCommand extends Command<
       } else {
         winner = findFirstCard(trickPlayerOrder, cardsPlayed, 'Skull King');
 
+        // Patrick: Need to be change
         // Add BloodyMary to number of pirates captured, if she's a pirate
         if (bloodyMaryChoice === 'pirate') {
           round.playersScore[winner].piratesCaptured += 1;
@@ -273,12 +280,18 @@ export class AfterCardPlayedCommand extends Command<
         'Bloody Mary'
       );
     } else {
+      // Patrick: Maybe we should put this in a if
+      // Patrick: The else should never happen, when you it happen it's a bug
+      // Patrick: and we might want to know what is the issue
       winner = findFirstCard(trickPlayerOrder, cardsPlayed, 'White Flag');
     }
 
     // Add victory to PlayerRoundScore
     round.playersScore[winner].tricksWon += 1;
     this.state.currentTrick.winner = winner;
+
+    // Patrick: Maybe something like :
+    // Patrick: return { winner, skullKingCaptured, piratesCaptured }
   }
 
   /*

@@ -66,6 +66,10 @@ const createDeck = (): Array<Card> => {
 
 const deck = createDeck();
 
+// Patrick Ear: The following functions are actually better in Actions.ts I think
+// It's my mistake.
+// These functions are heavily linked to their respective Action.
+
 const findHighestCard = (givenSuit: string, cardsPlayed: MapSchema<Card>) => {
   let winner = -1;
   let highestValue = 0;
