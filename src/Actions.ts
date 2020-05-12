@@ -5,7 +5,14 @@ import { MapSchema } from '@colyseus/schema';
 import { Command } from '@colyseus/command';
 import { Round } from './Round';
 import { PlayerHand } from './PlayerHand';
-import { shuffleArray, deck, prettyPrintObj, createDeck, findHighestCard } from './utils';
+import {
+  shuffleArray,
+  deck,
+  prettyPrintObj,
+  createDeck,
+  findHighestCard,
+  computeTrickPlayerOrder,
+} from './utils';
 import { Trick } from './Trick';
 import { PlayerRoundScore } from './PlayerRoundScore';
 import { PlayerGameScore } from './PlayerGameScore';
@@ -213,28 +220,10 @@ export class AfterCardPlayedCommand extends Command<
     let winner: number;
 
     const findFirstCard = function (...characters: string[]) {
-      const computeTrickPlayerOrder = () => {
-        const firstTrickPlayer = round.firstPlayer || round.startingPlayer;
-        const length = absolutePlayerOrder.length;
-        const startIdx = absolutePlayerOrder.findIndex(
-          (playerId) => playerId === firstTrickPlayer
-        );
-        let result: number[] = [];
-
-        // add the players after (and including) the starting trick player
-        for (let i = startIdx; i < length; i += 1) {
-          result.push(absolutePlayerOrder[i]);
-        }
-
-        // add the players before the starting trick player
-        for (let j = 0; j < startIdx; j += 1) {
-          result.push(absolutePlayerOrder[j]);
-        }
-
-        return result;
-      };
-
-      const trickPlayerOrder = computeTrickPlayerOrder();
+      const trickPlayerOrder = computeTrickPlayerOrder(
+        round,
+        absolutePlayerOrder
+      );
       let card: Card;
       let playerID: number;
 

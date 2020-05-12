@@ -1,5 +1,6 @@
 import { Card } from './Card';
-import { MapSchema } from '@colyseus/schema';
+import { MapSchema, ArraySchema } from '@colyseus/schema';
+import { Round } from './Round';
 
 const prettyPrintObj = (obj: any) => {
   const allKeys = Object.keys(obj);
@@ -83,4 +84,35 @@ const findHighestCard = (givenSuit: string, cardsPlayed: MapSchema<Card>) => {
   return winner;
 };
 
-export { prettyPrintObj, shuffleArray, deck, createDeck, findHighestCard };
+const computeTrickPlayerOrder = (
+  round: Round,
+  absolutePlayerOrder: ArraySchema<number>
+) => {
+  const firstTrickPlayer = round.firstPlayer || round.startingPlayer;
+  const length = absolutePlayerOrder.length;
+  const startIdx = absolutePlayerOrder.findIndex(
+    (playerId) => playerId === firstTrickPlayer
+  );
+  let result: number[] = [];
+
+  // add the players after (and including) the starting trick player
+  for (let i = startIdx; i < length; i += 1) {
+    result.push(absolutePlayerOrder[i]);
+  }
+
+  // add the players before the starting trick player
+  for (let j = 0; j < startIdx; j += 1) {
+    result.push(absolutePlayerOrder[j]);
+  }
+
+  return result;
+};
+
+export {
+  prettyPrintObj,
+  shuffleArray,
+  deck,
+  createDeck,
+  findHighestCard,
+  computeTrickPlayerOrder,
+};
