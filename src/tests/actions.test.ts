@@ -1,6 +1,6 @@
 import { MapSchema, ArraySchema } from '@colyseus/schema';
 import {
-  findHighestCard,
+  findHighestCardOwner,
   createDeck,
   computeTrickPlayerOrder,
   findFirstCardOwner,
@@ -10,7 +10,7 @@ import { Round } from '../Round';
 import { PlayerHand } from '../PlayerHand';
 import { PlayerRoundScore } from '../PlayerRoundScore';
 
-describe('findHighestCard()', () => {
+describe('findHighestCardOwner()', () => {
   const deck = createDeck();
   const cards = [deck[3], deck[13], deck[15], deck[24], deck[41], deck[65]];
   // 4 rouge, 1 bleu, 3 bleu, 12 bleu, 3 noir, bloody Mary
@@ -22,7 +22,7 @@ describe('findHighestCard()', () => {
 
   test('The highest blue card is at index 3 (12 Blue)', () => {
     const suit = 'blue';
-    expect(findHighestCard(suit, cardsPlayed)).toBe(3);
+    expect(findHighestCardOwner(suit, cardsPlayed)).toBe(3);
   });
 });
 

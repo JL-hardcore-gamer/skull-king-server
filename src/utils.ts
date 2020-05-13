@@ -70,7 +70,10 @@ const deck = createDeck();
 // It's my mistake.
 // These functions are heavily linked to their respective Action.
 
-const findHighestCard = (givenSuit: string, cardsPlayed: MapSchema<Card>) => {
+const findHighestCardOwner = (
+  givenSuit: string,
+  cardsPlayed: MapSchema<Card>
+) => {
   let winner = -1;
   let highestValue = 0;
   let card: Card;
@@ -133,7 +136,7 @@ export {
   shuffleArray,
   deck,
   createDeck,
-  findHighestCard,
+  findHighestCardOwner,
   computeTrickPlayerOrder,
   findFirstCardOwner,
 };
