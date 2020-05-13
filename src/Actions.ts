@@ -71,7 +71,98 @@ const findFirstCardOwner = function (
   }, -1);
 };
 
-export { findFirstCardOwner, findHighestCardOwner, computeTrickPlayerOrder };
+function computeWinner(
+  suit: string,
+  cardsPlayed: MapSchema<Card>,
+  trickPlayerOrder: number[],
+  bloodyMaryChoice: string
+) {
+  const cards = Object.values(cardsPlayed);
+  const characters = cards.map((card) => card.character);
+  const suits = cards.map((card) => card.suit);
+  let winner: number;
+  let skullKingCaptured = 0;
+  let piratesCaptured = 0;
+
+  if (characters.includes('Skull King')) {
+    if (characters.includes('Mermaid')) {
+      winner = findFirstCardOwner(trickPlayerOrder, cardsPlayed, 'Mermaid');
+      skullKingCaptured += 1;
+    } else {
+      winner = findFirstCardOwner(trickPlayerOrder, cardsPlayed, 'Skull King');
+
+      if (bloodyMaryChoice) piratesCaptured += 1;
+
+      piratesCaptured += cards.reduce((nbOfPirates, card) => {
+        card.character === 'Pirate' ? nbOfPirates + 1 : nbOfPirates;
+      }, 0);
+    }
+  } else if (
+    characters.includes('Bloody Mary') &&
+    bloodyMaryChoice === 'pirate'
+  ) {
+    winner = findFirstCardOwner(
+      trickPlayerOrder,
+      cardsPlayed,
+      'Pirate',
+      'Bloody Mary'
+    );
+  } else if (characters.includes('Pirate')) {
+    winner = findFirstCardOwner(trickPlayerOrder, cardsPlayed, 'Pirate');
+  } else if (characters.includes('Mermaid')) {
+    winner = findFirstCardOwner(trickPlayerOrder, cardsPlayed, 'Mermaid');
+  } else if (suits.includes('black')) {
+    winner = findHighestCardOwner('black', cardsPlayed);
+  } else if (suits.includes(suit)) {
+    winner = findHighestCardOwner(suit, cardsPlayed);
+  } else if (
+    characters.includes('Bloody Mary') &&
+    bloodyMaryChoice === 'escape'
+  ) {
+    winner = findFirstCardOwner(
+      trickPlayerOrder,
+      cardsPlayed,
+      'White Flag',
+      'Bloody Mary'
+    );
+  } else {
+    // Patrick: Maybe we should put this in a if
+    // Patrick: The else should never happen, when you it happen it's a bug
+    // Patrick: and we might want to know what is the issue
+    winner = findFirstCardOwner(trickPlayerOrder, cardsPlayed, 'White Flag');
+  }
+
+  return { winner, skullKingCaptured, piratesCaptured };
+}
+
+/*
+  Who wins the trick? 
+  1/ if the Skull King is played:
+    - check if there's also a Mermaid:
+    -- if it is, the 1st mermaid played is the winner
+    -- else, the SK is the winner
+
+  2/ if the Bloody Mary is played as a pirate, the first card that is a pirate or a bloody Mary wins
+  
+  3/ if a Pirate is played, the 1st pirate played is the winner
+
+  4/ if a Mermaid is played, the 1st mermaid played is the winner
+
+  5/ if a black card is played, the highest black card is the winner
+
+  6/ if the suits played include the trick suit, the highest card with the trick suit is the winner (translation: avoids a situation where all cards are flags)
+
+  7/ if the Bloody Mary is played as a White flag, the first card that  is a bloody Mary or a White flag wins
+
+  8/ else, first player is the winner (translation: all cards played are flags)
+*/
+
+export {
+  findFirstCardOwner,
+  findHighestCardOwner,
+  computeTrickPlayerOrder,
+  computeWinner,
+};
 
 export class OnJoinCommand extends Command<
   State,
@@ -267,103 +358,6 @@ export class AfterCardPlayedCommand extends Command<
     return playerOrder.length === numberOfCardsPlayed;
   }
 
-  computeWinner(
-    suit: string,
-    cardsPlayed: MapSchema<Card>,
-    trickPlayerOrder: number[]
-  ) {
-    const cards = Object.values(cardsPlayed);
-    const characters = cards.map((card) => card.character);
-    const suits = cards.map((card) => card.suit);
-    const bloodyMaryChoice = this.state.currentTrick.bloodyMary;
-    let winner: number;
-    let skullKingCaptured = 0;
-    let piratesCaptured = 0;
-
-    if (characters.includes('Skull King')) {
-      if (characters.includes('Mermaid')) {
-        winner = findFirstCardOwner(trickPlayerOrder, cardsPlayed, 'Mermaid');
-        // Add skull king captured to PlayerRoundScore
-        skullKingCaptured += 1;
-      } else {
-        winner = findFirstCardOwner(
-          trickPlayerOrder,
-          cardsPlayed,
-          'Skull King'
-        );
-
-        // Add BloodyMary to number of pirates captured, regardless of her being a pirate
-        if (bloodyMaryChoice) piratesCaptured += 1;
-
-        // Add number of pirates captured to PlayerRoundScore
-        piratesCaptured += cards.reduce((total, card) => {
-          card.character === 'Pirate' ? total + 1 : total;
-        }, 0);
-      }
-    } else if (
-      characters.includes('Bloody Mary') &&
-      bloodyMaryChoice === 'pirate'
-    ) {
-      winner = findFirstCardOwner(
-        trickPlayerOrder,
-        cardsPlayed,
-        'Pirate',
-        'Bloody Mary'
-      );
-    } else if (characters.includes('Pirate')) {
-      winner = findFirstCardOwner(trickPlayerOrder, cardsPlayed, 'Pirate');
-    } else if (characters.includes('Mermaid')) {
-      winner = findFirstCardOwner(trickPlayerOrder, cardsPlayed, 'Mermaid');
-    } else if (suits.includes('black')) {
-      winner = findHighestCardOwner('black', cardsPlayed);
-    } else if (suits.includes(suit)) {
-      winner = findHighestCardOwner(suit, cardsPlayed);
-    } else if (
-      characters.includes('Bloody Mary') &&
-      bloodyMaryChoice === 'escape'
-    ) {
-      winner = findFirstCardOwner(
-        trickPlayerOrder,
-        cardsPlayed,
-        'White Flag',
-        'Bloody Mary'
-      );
-    } else {
-      // Patrick: Maybe we should put this in a if
-      // Patrick: The else should never happen, when you it happen it's a bug
-      // Patrick: and we might want to know what is the issue
-      winner = findFirstCardOwner(trickPlayerOrder, cardsPlayed, 'White Flag');
-    }
-
-    // Add victory to PlayerRoundScore
-    // round.playersScore[winner].tricksWon += 1;
-    // this.state.currentTrick.winner = winner;
-
-    return { winner, skullKingCaptured, piratesCaptured };
-  }
-
-  /*
-    Who wins the trick? 
-    1/ if the Skull King is played:
-      - check if there's also a Mermaid:
-      -- if it is, the 1st mermaid played is the winner
-      -- else, the SK is the winner
-
-    2/ if the Bloody Mary is played as a pirate, the first card that is a pirate or a bloody Mary wins
-    
-    3/ if a Pirate is played, the 1st pirate played is the winner
-
-    4/ if a Mermaid is played, the 1st mermaid played is the winner
-
-    5/ if a black card is played, the highest black card is the winner
-
-    6/ if the suits played include the trick suit, the highest card with the trick suit is the winner (translation: avoids a situation where all cards are flags)
-
-    7/ if the Bloody Mary is played as a White flag, the first card that  is a bloody Mary or a White flag wins
-
-    8/ else, first player is the winner (translation: all cards played are flags)
-  */
-
   computeNextPlayer(playerId: number) {
     const playerOrder = this.state.game.orderedPlayers;
     const id = playerOrder.indexOf(playerId);
@@ -385,6 +379,7 @@ export class AfterCardPlayedCommand extends Command<
     const trick = this.state.currentTrick;
     const suit = trick.suit;
     const cardsPlayed = trick.cardsPlayed;
+    const bloodyMaryChoice = trick.bloodyMary;
     const round = this.state.game.remainingRounds[this.state.currentRound];
     const absolutePlayerOrder = this.state.game.orderedPlayers;
     const trickPlayerOrder = computeTrickPlayerOrder(
@@ -393,7 +388,12 @@ export class AfterCardPlayedCommand extends Command<
     );
 
     if (this.trickHasEnded()) {
-      const result = this.computeWinner(suit, cardsPlayed, trickPlayerOrder);
+      const result = computeWinner(
+        suit,
+        cardsPlayed,
+        trickPlayerOrder,
+        bloodyMaryChoice
+      );
       this.updateScores(round, result);
     } else {
       this.computeNextPlayer(obj.playerId);

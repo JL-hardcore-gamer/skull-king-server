@@ -4,6 +4,7 @@ import {
   findHighestCardOwner,
   findFirstCardOwner,
   computeTrickPlayerOrder,
+  computeWinner,
 } from '../Actions';
 import { Card } from '../Card';
 import { Round } from '../Round';
@@ -59,7 +60,7 @@ describe('computeTrickPlayerOrder()', () => {
 
 describe('findFirstCardOwner()', () => {
   const deck = createDeck();
-  const trickPlayerOrder = [5, 3, 4, 2, 1];
+  const trickPlayerOrder = [5, 3, 4, 2, 1, 6];
   let cardsPlayed = new MapSchema<Card>();
 
   test('Find first mermaid played', () => {
@@ -96,5 +97,48 @@ describe('findFirstCardOwner()', () => {
     expect(
       findFirstCardOwner(trickPlayerOrder, cardsPlayed, 'Pirate', 'Bloody Mary')
     ).toBe(5);
+  });
+});
+
+describe('computeWinner()', () => {
+  const deck = createDeck();
+
+  test('Black wins over suit cards (Mary as an Escape)', () => {
+    const cards = [deck[3], deck[13], deck[15], deck[24], deck[41], deck[65]];
+    // 4 rouge, 1 bleu, 3 bleu, 12 bleu, 3 noir, bloody Mary
+    // gagnant: 3 noir (bloody Mary as escape)
+    const trickPlayerOrder = [5, 3, 4, 2, 1, 6];
+    const suit = 'blue';
+    const bloodyMaryChoice = 'escape';
+
+    let cardsPlayed = new MapSchema<Card>();
+    trickPlayerOrder.forEach((playerId, idx) => {
+      cardsPlayed[playerId] = cards[idx];
+    });
+
+    const result = { winner: 1, skullKingCaptured: 0, piratesCaptured: 0 };
+
+    expect(
+      computeWinner(suit, cardsPlayed, trickPlayerOrder, bloodyMaryChoice)
+    ).toEqual(result);
+  });
+
+  test('Pirates win over Black cards and Mermaids', () => {
+    const cards = [deck[53], deck[58], deck[54], deck[57], deck[41], deck[65]];
+    // sirène, pirate, sirène, pirate, 3 noir, bloody Mary
+    const trickPlayerOrder = [5, 3, 4, 2, 1, 6];
+    const suit = 'black';
+    const bloodyMaryChoice = 'escape';
+
+    let cardsPlayed = new MapSchema<Card>();
+    trickPlayerOrder.forEach((playerId, idx) => {
+      cardsPlayed[playerId] = cards[idx];
+    });
+
+    const result = { winner: 3, skullKingCaptured: 0, piratesCaptured: 0 };
+
+    expect(
+      computeWinner(suit, cardsPlayed, trickPlayerOrder, bloodyMaryChoice)
+    ).toEqual(result);
   });
 });
