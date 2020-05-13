@@ -115,4 +115,60 @@ describe('computeWinner()', () => {
 
     expect(computeWinner(trick)).toEqual(result);
   });
+
+  test('Mermaids win over black cards', () => {
+    const cardsId = [51, 16, 53, 54, 41, 64];
+    //  13 noir, 4 bleu, sirène, sirène, 3 noir, escape
+
+    const trick = Object.values(setupTrick([cardsId, 'black']));
+
+    const result = { winner: 4, skullKingCaptured: 0, piratesCaptured: 0 };
+
+    expect(computeWinner(trick)).toEqual(result);
+  });
+
+  test('Pirates win over mermaids', () => {
+    const cardsId = [51, 16, 53, 58, 41, 64];
+    //  13 noir, 4 bleu, sirène, pirate, 3 noir, escape
+
+    const trick = Object.values(setupTrick([cardsId, 'black']));
+
+    const result = { winner: 2, skullKingCaptured: 0, piratesCaptured: 0 };
+
+    expect(computeWinner(trick)).toEqual(result);
+  });
+
+  test('Mermaids win over the Skull King (and SK counter is incremented)', () => {
+    const cardsId = [52, 16, 53, 51, 41, 64];
+    //  skull king, 4 bleu, sirène, 13 noir, 3 noir, escape
+
+    const trick = Object.values(setupTrick([cardsId, 'blue']));
+
+    const result = { winner: 4, skullKingCaptured: 1, piratesCaptured: 0 };
+
+    expect(computeWinner(trick)).toEqual(result);
+  });
+
+  test('Mermaids win over the Skull King even with pirates', () => {
+    const cardsId = [52, 16, 53, 58, 41, 54];
+    //  skull king, 4 bleu, sirène, pirate, 3 noir, sirène
+
+    const trick = Object.values(setupTrick([cardsId, 'blue']));
+
+    const result = { winner: 4, skullKingCaptured: 1, piratesCaptured: 0 };
+
+    expect(computeWinner(trick)).toEqual(result);
+  });
+
+  // Found a bug !! :D need to solve it now (skipping the test)
+  test.skip('Skull King captures pirates', () => {
+    const cardsId = [52, 16, 58, 51, 41, 56];
+    //  skull king, 4 bleu, pirate, 13 noir, 3 noir, pirate
+
+    const trick = Object.values(setupTrick([cardsId, 'blue']));
+
+    const result = { winner: 5, skullKingCaptured: 0, piratesCaptured: 2 };
+
+    expect(computeWinner(trick)).toEqual(result);
+  });
 });
