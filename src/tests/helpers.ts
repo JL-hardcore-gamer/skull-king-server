@@ -15,8 +15,8 @@ const setupTrick = (params: any = []) => {
     cardsPlayed[playerId] = cards[idx];
   });
 
-  const resultObj = { suit, cardsPlayed, playerOrder, bloodyMaryChoice };
-  return Object.values(resultObj);
+  return { suit, cardsPlayed, playerOrder, bloodyMaryChoice };
+  // return Object.values(resultObj);
 };
 
 export { setupTrick };

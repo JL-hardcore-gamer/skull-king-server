@@ -1,30 +1,23 @@
 import { MapSchema, ArraySchema } from '@colyseus/schema';
-import { createDeck } from '../utils';
 import {
   findHighestCardOwner,
   findFirstCardOwner,
   computeTrickPlayerOrder,
   computeWinner,
 } from '../Actions';
-import { Card } from '../Card';
 import { Round } from '../Round';
 import { PlayerHand } from '../PlayerHand';
 import { PlayerRoundScore } from '../PlayerRoundScore';
 import { setupTrick } from './helpers';
 
 describe('findHighestCardOwner()', () => {
-  const deck = createDeck();
-  const cards = [deck[3], deck[13], deck[15], deck[24], deck[41], deck[65]];
-  // 4 rouge, 1 bleu, 3 bleu, 12 bleu, 3 noir, bloody Mary
+  const cardsId = [13, 3, 15, 24, 41, 65];
+  // 1 bleu, 4 rouge, 3 bleu, 12 bleu, 3 noir, bloody Mary
 
-  let cardsPlayed = new MapSchema<Card>();
-  for (let i = 0; i < 6; i++) {
-    cardsPlayed[i] = cards[i];
-  }
+  const trick = setupTrick([cardsId, 'blue', , 'escape']);
 
-  test('The highest blue card is at index 3 (12 Blue)', () => {
-    const suit = 'blue';
-    expect(findHighestCardOwner(suit, cardsPlayed)).toBe(3);
+  test('The highest blue card is player 2 (12 Blue)', () => {
+    expect(findHighestCardOwner(trick.suit, trick.cardsPlayed)).toBe(2);
   });
 });
 
@@ -60,31 +53,30 @@ describe('computeTrickPlayerOrder()', () => {
 });
 
 describe('findFirstCardOwner()', () => {
-  const deck = createDeck();
-  const trickPlayerOrder = [5, 3, 4, 2, 1, 6];
-  let cardsPlayed = new MapSchema<Card>();
-
   test('Find first mermaid played', () => {
-    const cards = [deck[53], deck[13], deck[54], deck[24], deck[41], deck[65]];
+    const cardsId = [53, 14, 54, 24, 41, 65];
     // sirène, 1 bleu, sirène, 12 bleu, 3 noir, bloody Mary
-    trickPlayerOrder.forEach((playerId, idx) => {
-      cardsPlayed[playerId] = cards[idx];
-    });
 
-    expect(findFirstCardOwner(trickPlayerOrder, cardsPlayed, 'Mermaid')).toBe(
-      5
-    );
+    const trick = setupTrick([cardsId, 'blue', , 'escape']);
+
+    expect(
+      findFirstCardOwner(trick.playerOrder, trick.cardsPlayed, 'Mermaid')
+    ).toBe(5);
   });
 
   test('Find first pirate played, with Bloody Mary', () => {
-    const cards = [deck[53], deck[58], deck[54], deck[57], deck[41], deck[65]];
+    const cardsId = [53, 58, 54, 57, 41, 65];
     // sirène, pirate, sirène, pirate, 3 noir, bloody Mary
-    trickPlayerOrder.forEach((playerId, idx) => {
-      cardsPlayed[playerId] = cards[idx];
-    });
+
+    const trick = setupTrick([cardsId, 'black', , 'pirate']);
 
     expect(
-      findFirstCardOwner(trickPlayerOrder, cardsPlayed, 'Pirate', 'Bloody Mary')
+      findFirstCardOwner(
+        trick.playerOrder,
+        trick.cardsPlayed,
+        'Pirate',
+        'Bloody Mary'
+      )
     ).toBe(3);
   });
 
@@ -92,30 +84,35 @@ describe('findFirstCardOwner()', () => {
     const cardsId = [65, 58, 54, 57, 41, 58];
     // bloody Mary, pirate, sirène, pirate, 3 noir, pirate
 
-    const input = setupTrick([cardsId, , , 'pirate']);
+    const trick = setupTrick([cardsId, , , 'pirate']);
 
     expect(
-      findFirstCardOwner(input[2], input[1], 'Pirate', 'Bloody Mary')
+      findFirstCardOwner(
+        trick.playerOrder,
+        trick.cardsPlayed,
+        'Pirate',
+        'Bloody Mary'
+      )
     ).toBe(5);
   });
 });
 
 describe('computeWinner()', () => {
   test('Black wins over suit cards (Mary as an Escape)', () => {
-    const input = setupTrick();
+    const trick = Object.values(setupTrick());
     const result = { winner: 1, skullKingCaptured: 0, piratesCaptured: 0 };
 
-    expect(computeWinner(input)).toEqual(result);
+    expect(computeWinner(trick)).toEqual(result);
   });
 
   test('Pirates win over Black cards and Mermaids', () => {
     const cardsId = [53, 58, 54, 57, 41, 65];
     // sirène, pirate, sirène, pirate, 3 noir, bloody Mary
 
-    const input = setupTrick([cardsId, 'black', , 'escape']);
+    const trick = Object.values(setupTrick([cardsId, 'black', , 'escape']));
 
     const result = { winner: 3, skullKingCaptured: 0, piratesCaptured: 0 };
 
-    expect(computeWinner(input)).toEqual(result);
+    expect(computeWinner(trick)).toEqual(result);
   });
 });
