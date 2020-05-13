@@ -71,12 +71,12 @@ const findFirstCardOwner = function (
   }, -1);
 };
 
-function computeWinner(
-  suit: string,
-  cardsPlayed: MapSchema<Card>,
-  trickPlayerOrder: number[],
-  bloodyMaryChoice: string
-) {
+// input: [suit, cardsPlayed, trickPlayerOrder, bloodyMaryChoice]
+function computeWinner(params: any) {
+  const suit: string = params[0];
+  const cardsPlayed: MapSchema<Card> = params[1];
+  const trickPlayerOrder: number[] = params[2];
+  const bloodyMaryChoice: string = params[3];
   const cards = Object.values(cardsPlayed);
   const characters = cards.map((card) => card.character);
   const suits = cards.map((card) => card.suit);
@@ -388,12 +388,12 @@ export class AfterCardPlayedCommand extends Command<
     );
 
     if (this.trickHasEnded()) {
-      const result = computeWinner(
+      const result = computeWinner([
         suit,
         cardsPlayed,
         trickPlayerOrder,
-        bloodyMaryChoice
-      );
+        bloodyMaryChoice,
+      ]);
       this.updateScores(round, result);
     } else {
       this.computeNextPlayer(obj.playerId);

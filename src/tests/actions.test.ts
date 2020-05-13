@@ -10,6 +10,7 @@ import { Card } from '../Card';
 import { Round } from '../Round';
 import { PlayerHand } from '../PlayerHand';
 import { PlayerRoundScore } from '../PlayerRoundScore';
+import { setupTrick } from './helpers';
 
 describe('findHighestCardOwner()', () => {
   const deck = createDeck();
@@ -101,44 +102,21 @@ describe('findFirstCardOwner()', () => {
 });
 
 describe('computeWinner()', () => {
-  const deck = createDeck();
-
   test('Black wins over suit cards (Mary as an Escape)', () => {
-    const cards = [deck[3], deck[13], deck[15], deck[24], deck[41], deck[65]];
-    // 4 rouge, 1 bleu, 3 bleu, 12 bleu, 3 noir, bloody Mary
-    // gagnant: 3 noir (bloody Mary as escape)
-    const trickPlayerOrder = [5, 3, 4, 2, 1, 6];
-    const suit = 'blue';
-    const bloodyMaryChoice = 'escape';
-
-    let cardsPlayed = new MapSchema<Card>();
-    trickPlayerOrder.forEach((playerId, idx) => {
-      cardsPlayed[playerId] = cards[idx];
-    });
-
+    const input = setupTrick();
     const result = { winner: 1, skullKingCaptured: 0, piratesCaptured: 0 };
 
-    expect(
-      computeWinner(suit, cardsPlayed, trickPlayerOrder, bloodyMaryChoice)
-    ).toEqual(result);
+    expect(computeWinner(input)).toEqual(result);
   });
 
   test('Pirates win over Black cards and Mermaids', () => {
-    const cards = [deck[53], deck[58], deck[54], deck[57], deck[41], deck[65]];
+    const cardsId = [53, 58, 54, 57, 41, 65];
     // sirène, pirate, sirène, pirate, 3 noir, bloody Mary
-    const trickPlayerOrder = [5, 3, 4, 2, 1, 6];
-    const suit = 'black';
-    const bloodyMaryChoice = 'escape';
 
-    let cardsPlayed = new MapSchema<Card>();
-    trickPlayerOrder.forEach((playerId, idx) => {
-      cardsPlayed[playerId] = cards[idx];
-    });
+    const input = setupTrick([cardsId, 'black', , 'escape']);
 
     const result = { winner: 3, skullKingCaptured: 0, piratesCaptured: 0 };
 
-    expect(
-      computeWinner(suit, cardsPlayed, trickPlayerOrder, bloodyMaryChoice)
-    ).toEqual(result);
+    expect(computeWinner(input)).toEqual(result);
   });
 });
