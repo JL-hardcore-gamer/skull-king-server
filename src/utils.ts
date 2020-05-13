@@ -1,6 +1,4 @@
 import { Card } from './Card';
-import { MapSchema, ArraySchema } from '@colyseus/schema';
-import { Round } from './Round';
 
 const prettyPrintObj = (obj: any) => {
   const allKeys = Object.keys(obj);
@@ -70,73 +68,73 @@ const deck = createDeck();
 // It's my mistake.
 // These functions are heavily linked to their respective Action.
 
-const findHighestCardOwner = (
-  givenSuit: string,
-  cardsPlayed: MapSchema<Card>
-) => {
-  let winner = -1;
-  let highestValue = 0;
-  let card: Card;
-  let cardValue: number;
+// const findHighestCardOwner = (
+//   givenSuit: string,
+//   cardsPlayed: MapSchema<Card>
+// ) => {
+//   let winner = -1;
+//   let highestValue = 0;
+//   let card: Card;
+//   let cardValue: number;
 
-  for (let playerID in cardsPlayed) {
-    card = cardsPlayed[playerID];
-    cardValue = Number(card.character);
-    if (card.suit === givenSuit && cardValue > highestValue) {
-      winner = Number(playerID);
-      highestValue = cardValue;
-    }
-  }
+//   for (let playerID in cardsPlayed) {
+//     card = cardsPlayed[playerID];
+//     cardValue = Number(card.character);
+//     if (card.suit === givenSuit && cardValue > highestValue) {
+//       winner = Number(playerID);
+//       highestValue = cardValue;
+//     }
+//   }
 
-  return winner;
-};
+//   return winner;
+// };
 
-const computeTrickPlayerOrder = (
-  round: Round,
-  absolutePlayerOrder: ArraySchema<number>
-) => {
-  const firstTrickPlayer = round.firstPlayer || round.startingPlayer;
-  const length = absolutePlayerOrder.length;
-  const startIdx = absolutePlayerOrder.findIndex(
-    (playerId) => playerId === firstTrickPlayer
-  );
-  let result: number[] = [];
+// const computeTrickPlayerOrder = (
+//   round: Round,
+//   absolutePlayerOrder: ArraySchema<number>
+// ) => {
+//   const firstTrickPlayer = round.firstPlayer || round.startingPlayer;
+//   const length = absolutePlayerOrder.length;
+//   const startIdx = absolutePlayerOrder.findIndex(
+//     (playerId) => playerId === firstTrickPlayer
+//   );
+//   let result: number[] = [];
 
-  // add the players after (and including) the starting trick player
-  for (let i = startIdx; i < length; i += 1) {
-    result.push(absolutePlayerOrder[i]);
-  }
+//   // add the players after (and including) the starting trick player
+//   for (let i = startIdx; i < length; i += 1) {
+//     result.push(absolutePlayerOrder[i]);
+//   }
 
-  // add the players before the starting trick player
-  for (let j = 0; j < startIdx; j += 1) {
-    result.push(absolutePlayerOrder[j]);
-  }
+//   // add the players before the starting trick player
+//   for (let j = 0; j < startIdx; j += 1) {
+//     result.push(absolutePlayerOrder[j]);
+//   }
 
-  return result;
-};
+//   return result;
+// };
 
-const findFirstCardOwner = function (
-  trickPlayerOrder: number[],
-  cardsPlayed: MapSchema<Card>,
-  ...characters: string[]
-) {
-  let card: Card;
+// const findFirstCardOwner = function (
+//   trickPlayerOrder: number[],
+//   cardsPlayed: MapSchema<Card>,
+//   ...characters: string[]
+// ) {
+//   let card: Card;
 
-  return trickPlayerOrder.reduce((firstCardOwner, playerId) => {
-    if (firstCardOwner === -1) {
-      card = cardsPlayed[playerId];
-      return characters.includes(card.character) ? playerId : firstCardOwner;
-    }
-    return firstCardOwner;
-  }, -1);
-};
+//   return trickPlayerOrder.reduce((firstCardOwner, playerId) => {
+//     if (firstCardOwner === -1) {
+//       card = cardsPlayed[playerId];
+//       return characters.includes(card.character) ? playerId : firstCardOwner;
+//     }
+//     return firstCardOwner;
+//   }, -1);
+// };
 
 export {
   prettyPrintObj,
   shuffleArray,
   deck,
   createDeck,
-  findHighestCardOwner,
-  computeTrickPlayerOrder,
-  findFirstCardOwner,
+  // findHighestCardOwner,
+  // computeTrickPlayerOrder,
+  // findFirstCardOwner,
 };

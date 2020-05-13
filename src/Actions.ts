@@ -1,22 +1,77 @@
 import { State } from './State';
 import { Player } from './Player';
 import { Card } from './Card';
-import { MapSchema } from '@colyseus/schema';
+import { MapSchema, ArraySchema } from '@colyseus/schema';
 import { Command } from '@colyseus/command';
 import { Round } from './Round';
 import { PlayerHand } from './PlayerHand';
-import {
-  shuffleArray,
-  deck,
-  prettyPrintObj,
-  createDeck,
-  findHighestCard,
-  computeTrickPlayerOrder,
-  findFirstCard,
-} from './utils';
+import { shuffleArray, deck, prettyPrintObj, createDeck } from './utils';
 import { Trick } from './Trick';
 import { PlayerRoundScore } from './PlayerRoundScore';
 import { PlayerGameScore } from './PlayerGameScore';
+
+const findHighestCardOwner = (
+  givenSuit: string,
+  cardsPlayed: MapSchema<Card>
+) => {
+  let winner = -1;
+  let highestValue = 0;
+  let card: Card;
+  let cardValue: number;
+
+  for (let playerID in cardsPlayed) {
+    card = cardsPlayed[playerID];
+    cardValue = Number(card.character);
+    if (card.suit === givenSuit && cardValue > highestValue) {
+      winner = Number(playerID);
+      highestValue = cardValue;
+    }
+  }
+
+  return winner;
+};
+
+const computeTrickPlayerOrder = (
+  round: Round,
+  absolutePlayerOrder: ArraySchema<number>
+) => {
+  const firstTrickPlayer = round.firstPlayer || round.startingPlayer;
+  const length = absolutePlayerOrder.length;
+  const startIdx = absolutePlayerOrder.findIndex(
+    (playerId) => playerId === firstTrickPlayer
+  );
+  let result: number[] = [];
+
+  // add the players after (and including) the starting trick player
+  for (let i = startIdx; i < length; i += 1) {
+    result.push(absolutePlayerOrder[i]);
+  }
+
+  // add the players before the starting trick player
+  for (let j = 0; j < startIdx; j += 1) {
+    result.push(absolutePlayerOrder[j]);
+  }
+
+  return result;
+};
+
+const findFirstCardOwner = function (
+  trickPlayerOrder: number[],
+  cardsPlayed: MapSchema<Card>,
+  ...characters: string[]
+) {
+  let card: Card;
+
+  return trickPlayerOrder.reduce((firstCardOwner, playerId) => {
+    if (firstCardOwner === -1) {
+      card = cardsPlayed[playerId];
+      return characters.includes(card.character) ? playerId : firstCardOwner;
+    }
+    return firstCardOwner;
+  }, -1);
+};
+
+export { findFirstCardOwner, findHighestCardOwner, computeTrickPlayerOrder };
 
 export class OnJoinCommand extends Command<
   State,
@@ -232,11 +287,15 @@ export class AfterCardPlayedCommand extends Command<
 
     if (characters.includes('Skull King')) {
       if (characters.includes('Mermaid')) {
-        winner = findFirstCard(trickPlayerOrder, cardsPlayed, 'Mermaid');
+        winner = findFirstCardOwner(trickPlayerOrder, cardsPlayed, 'Mermaid');
         // Add skull king captured to PlayerRoundScore
         round.playersScore[winner].skullKingCaptured += 1;
       } else {
-        winner = findFirstCard(trickPlayerOrder, cardsPlayed, 'Skull King');
+        winner = findFirstCardOwner(
+          trickPlayerOrder,
+          cardsPlayed,
+          'Skull King'
+        );
 
         // Patrick: Need to be change
         // Add BloodyMary to number of pirates captured, if she's a pirate
@@ -255,25 +314,25 @@ export class AfterCardPlayedCommand extends Command<
       characters.includes('Bloody Mary') &&
       bloodyMaryChoice === 'pirate'
     ) {
-      winner = findFirstCard(
+      winner = findFirstCardOwner(
         trickPlayerOrder,
         cardsPlayed,
         'Pirate',
         'Bloody Mary'
       );
     } else if (characters.includes('Pirate')) {
-      winner = findFirstCard(trickPlayerOrder, cardsPlayed, 'Pirate');
+      winner = findFirstCardOwner(trickPlayerOrder, cardsPlayed, 'Pirate');
     } else if (characters.includes('Mermaid')) {
-      winner = findFirstCard(trickPlayerOrder, cardsPlayed, 'Mermaid');
+      winner = findFirstCardOwner(trickPlayerOrder, cardsPlayed, 'Mermaid');
     } else if (suits.includes('black')) {
-      winner = findHighestCard('black', cardsPlayed);
+      winner = findHighestCardOwner('black', cardsPlayed);
     } else if (suits.includes(suit)) {
-      winner = findHighestCard(suit, cardsPlayed);
+      winner = findHighestCardOwner(suit, cardsPlayed);
     } else if (
       characters.includes('Bloody Mary') &&
       bloodyMaryChoice === 'escape'
     ) {
-      winner = findFirstCard(
+      winner = findFirstCardOwner(
         trickPlayerOrder,
         cardsPlayed,
         'White Flag',
@@ -283,7 +342,7 @@ export class AfterCardPlayedCommand extends Command<
       // Patrick: Maybe we should put this in a if
       // Patrick: The else should never happen, when you it happen it's a bug
       // Patrick: and we might want to know what is the issue
-      winner = findFirstCard(trickPlayerOrder, cardsPlayed, 'White Flag');
+      winner = findFirstCardOwner(trickPlayerOrder, cardsPlayed, 'White Flag');
     }
 
     // Add victory to PlayerRoundScore

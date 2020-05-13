@@ -1,10 +1,10 @@
 import { MapSchema, ArraySchema } from '@colyseus/schema';
+import { createDeck } from '../utils';
 import {
   findHighestCardOwner,
-  createDeck,
-  computeTrickPlayerOrder,
   findFirstCardOwner,
-} from '../utils';
+  computeTrickPlayerOrder,
+} from '../Actions';
 import { Card } from '../Card';
 import { Round } from '../Round';
 import { PlayerHand } from '../PlayerHand';
