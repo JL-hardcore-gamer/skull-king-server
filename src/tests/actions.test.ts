@@ -89,14 +89,13 @@ describe('findFirstCardOwner()', () => {
   });
 
   test('Find first pirate played, with Bloody Mary as a winner', () => {
-    const cards = [deck[65], deck[58], deck[54], deck[57], deck[41], deck[58]];
+    const cardsId = [65, 58, 54, 57, 41, 58];
     // bloody Mary, pirate, sirène, pirate, 3 noir, pirate
-    trickPlayerOrder.forEach((playerId, idx) => {
-      cardsPlayed[playerId] = cards[idx];
-    });
+
+    const input = setupTrick([cardsId, , , 'pirate']);
 
     expect(
-      findFirstCardOwner(trickPlayerOrder, cardsPlayed, 'Pirate', 'Bloody Mary')
+      findFirstCardOwner(input[2], input[1], 'Pirate', 'Bloody Mary')
     ).toBe(5);
   });
 });
