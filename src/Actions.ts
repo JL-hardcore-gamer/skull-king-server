@@ -267,29 +267,24 @@ export class AfterCardPlayedCommand extends Command<
     return playerOrder.length === numberOfCardsPlayed;
   }
 
-  computeWinner(suit: string, cardsPlayed: MapSchema<Card>, round: Round) {
-    // Patrick: Move Up Begin
-    const absolutePlayerOrder = this.state.game.orderedPlayers;
-    const trickPlayerOrder = computeTrickPlayerOrder(
-      round,
-      absolutePlayerOrder
-    );
-    // Patrick: Move Up End ? Pass trickPlayerOrder as an arg
-    // Patrick: Don't need Round then
+  computeWinner(
+    suit: string,
+    cardsPlayed: MapSchema<Card>,
+    trickPlayerOrder: number[]
+  ) {
     const cards = Object.values(cardsPlayed);
     const characters = cards.map((card) => card.character);
     const suits = cards.map((card) => card.suit);
     const bloodyMaryChoice = this.state.currentTrick.bloodyMary;
     let winner: number;
-
-    // Patrick: let skullKingCaptured = 0
-    // Patrick: let piratesCaptured = 0
+    let skullKingCaptured = 0;
+    let piratesCaptured = 0;
 
     if (characters.includes('Skull King')) {
       if (characters.includes('Mermaid')) {
         winner = findFirstCardOwner(trickPlayerOrder, cardsPlayed, 'Mermaid');
         // Add skull king captured to PlayerRoundScore
-        round.playersScore[winner].skullKingCaptured += 1;
+        skullKingCaptured += 1;
       } else {
         winner = findFirstCardOwner(
           trickPlayerOrder,
@@ -297,18 +292,13 @@ export class AfterCardPlayedCommand extends Command<
           'Skull King'
         );
 
-        // Patrick: Need to be change
-        // Add BloodyMary to number of pirates captured, if she's a pirate
-        if (bloodyMaryChoice === 'pirate') {
-          round.playersScore[winner].piratesCaptured += 1;
-        }
+        // Add BloodyMary to number of pirates captured, regardless of her being a pirate
+        if (bloodyMaryChoice) piratesCaptured += 1;
 
         // Add number of pirates captured to PlayerRoundScore
-        let numberOfPirates: number;
-        numberOfPirates = cards.reduce((total, card) => {
+        piratesCaptured += cards.reduce((total, card) => {
           card.character === 'Pirate' ? total + 1 : total;
         }, 0);
-        round.playersScore[winner].piratesCaptured += numberOfPirates;
       }
     } else if (
       characters.includes('Bloody Mary') &&
@@ -346,11 +336,10 @@ export class AfterCardPlayedCommand extends Command<
     }
 
     // Add victory to PlayerRoundScore
-    round.playersScore[winner].tricksWon += 1;
-    this.state.currentTrick.winner = winner;
+    // round.playersScore[winner].tricksWon += 1;
+    // this.state.currentTrick.winner = winner;
 
-    // Patrick: Maybe something like :
-    // Patrick: return { winner, skullKingCaptured, piratesCaptured }
+    return { winner, skullKingCaptured, piratesCaptured };
   }
 
   /*
@@ -383,14 +372,29 @@ export class AfterCardPlayedCommand extends Command<
     this.state.currentTrick.currentPlayer = newPlayer;
   }
 
+  updateScores(round: Round, result: any) {
+    const winner = result.winner;
+
+    this.state.currentTrick.winner = winner;
+    round.playersScore[winner].skullKingCaptured += result.skullKingCaptured;
+    round.playersScore[winner].piratesCaptured += result.piratesCaptured;
+    round.playersScore[winner].tricksWon += 1;
+  }
+
   execute(obj: any) {
     const trick = this.state.currentTrick;
     const suit = trick.suit;
     const cardsPlayed = trick.cardsPlayed;
     const round = this.state.game.remainingRounds[this.state.currentRound];
+    const absolutePlayerOrder = this.state.game.orderedPlayers;
+    const trickPlayerOrder = computeTrickPlayerOrder(
+      round,
+      absolutePlayerOrder
+    );
 
     if (this.trickHasEnded()) {
-      this.computeWinner(suit, cardsPlayed, round);
+      const result = this.computeWinner(suit, cardsPlayed, trickPlayerOrder);
+      this.updateScores(round, result);
     } else {
       this.computeNextPlayer(obj.playerId);
     }
