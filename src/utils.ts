@@ -112,21 +112,20 @@ const computeTrickPlayerOrder = (
   return result;
 };
 
-const findFirstCard = function (
+const findFirstCardOwner = function (
   trickPlayerOrder: number[],
   cardsPlayed: MapSchema<Card>,
   ...characters: string[]
 ) {
   let card: Card;
-  let playerID: number;
 
-  for (let i = 0, length = trickPlayerOrder.length; i < length; i += 1) {
-    playerID = trickPlayerOrder[i];
-    card = cardsPlayed[playerID];
-    if (characters.includes(card.character)) return playerID;
-  }
-
-  return -1;
+  return trickPlayerOrder.reduce((firstCardOwner, playerId) => {
+    if (firstCardOwner === -1) {
+      card = cardsPlayed[playerId];
+      return characters.includes(card.character) ? playerId : firstCardOwner;
+    }
+    return firstCardOwner;
+  }, -1);
 };
 
 export {
@@ -136,5 +135,5 @@ export {
   createDeck,
   findHighestCard,
   computeTrickPlayerOrder,
-  findFirstCard,
+  findFirstCardOwner,
 };

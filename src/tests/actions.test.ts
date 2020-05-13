@@ -3,7 +3,7 @@ import {
   findHighestCard,
   createDeck,
   computeTrickPlayerOrder,
-  findFirstCard,
+  findFirstCardOwner,
 } from '../utils';
 import { Card } from '../Card';
 import { Round } from '../Round';
@@ -57,7 +57,7 @@ describe('computeTrickPlayerOrder()', () => {
   });
 });
 
-describe('findFirstCard()', () => {
+describe('findFirstCardOwner()', () => {
   const deck = createDeck();
   const trickPlayerOrder = [5, 3, 4, 2, 1];
   let cardsPlayed = new MapSchema<Card>();
@@ -69,7 +69,9 @@ describe('findFirstCard()', () => {
       cardsPlayed[playerId] = cards[idx];
     });
 
-    expect(findFirstCard(trickPlayerOrder, cardsPlayed, 'Mermaid'));
+    expect(findFirstCardOwner(trickPlayerOrder, cardsPlayed, 'Mermaid')).toBe(
+      5
+    );
   });
 
   test('Find first pirate played, with Bloody Mary', () => {
@@ -80,8 +82,8 @@ describe('findFirstCard()', () => {
     });
 
     expect(
-      findFirstCard(trickPlayerOrder, cardsPlayed, 'Pirate', 'Bloody Mary')
-    );
+      findFirstCardOwner(trickPlayerOrder, cardsPlayed, 'Pirate', 'Bloody Mary')
+    ).toBe(3);
   });
 
   test('Find first pirate played, with Bloody Mary as a winner', () => {
@@ -92,7 +94,7 @@ describe('findFirstCard()', () => {
     });
 
     expect(
-      findFirstCard(trickPlayerOrder, cardsPlayed, 'Pirate', 'Bloody Mary')
-    );
+      findFirstCardOwner(trickPlayerOrder, cardsPlayed, 'Pirate', 'Bloody Mary')
+    ).toBe(5);
   });
 });

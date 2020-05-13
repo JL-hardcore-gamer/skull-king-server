@@ -6,7 +6,7 @@
   "scripts": {
     "start": "nodemon",
     "loadtest": "colyseus-loadtest --room SkullKing --numClients 10",
-    "test": "jest"
+    "test": "jest --watch"
   },
   "author": "",
   "license": "UNLICENSED",
