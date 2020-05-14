@@ -7,7 +7,7 @@
     "start": "nodemon",
     "loadtest": "colyseus-loadtest --room SkullKing --numClients 10",
     "test": "jest --watch",
-    "pm2 start": "./node_modules/.bin/pm2 start src/index.ts"
+    "pm2start": "./node_modules/.bin/pm2 start src/index.ts"
   },
   "author": "",
   "license": "UNLICENSED",
