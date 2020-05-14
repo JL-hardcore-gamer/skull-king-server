@@ -1,7 +1,7 @@
+import { MapSchema, ArraySchema } from '@colyseus/schema';
 import { State } from './State';
 import { Player } from './Player';
 import { Card } from './Card';
-import { MapSchema, ArraySchema } from '@colyseus/schema';
 import { Command } from '@colyseus/command';
 import { Round } from './Round';
 import { PlayerHand } from './PlayerHand';
@@ -19,14 +19,14 @@ const findHighestCardOwner = (
   let card: Card;
   let cardValue: number;
 
-  for (let playerID in cardsPlayed) {
-    card = cardsPlayed[playerID];
+  Object.keys(cardsPlayed).forEach((playerId) => {
+    card = cardsPlayed[playerId];
     cardValue = Number(card.character);
     if (card.suit === givenSuit && cardValue > highestValue) {
-      winner = Number(playerID);
+      winner = Number(playerId);
       highestValue = cardValue;
     }
-  }
+  });
 
   return winner;
 };
@@ -36,11 +36,11 @@ const computeTrickPlayerOrder = (
   absolutePlayerOrder: ArraySchema<number>
 ) => {
   const firstTrickPlayer = round.firstPlayer || round.startingPlayer;
-  const length = absolutePlayerOrder.length;
+  const { length } = absolutePlayerOrder;
   const startIdx = absolutePlayerOrder.findIndex(
     (playerId) => playerId === firstTrickPlayer
   );
-  let result: number[] = [];
+  const result: number[] = [];
 
   // add the players after (and including) the starting trick player
   for (let i = startIdx; i < length; i += 1) {
@@ -55,11 +55,11 @@ const computeTrickPlayerOrder = (
   return result;
 };
 
-const findFirstCardOwner = function (
+const findFirstCardOwner = (
   trickPlayerOrder: number[],
   cardsPlayed: MapSchema<Card>,
   ...characters: string[]
-) {
+) => {
   let card: Card;
 
   return trickPlayerOrder.reduce((firstCardOwner, playerId) => {

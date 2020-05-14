@@ -36,6 +36,7 @@
   "dependencies": {
     "@colyseus/command": "^0.1.5",
     "@colyseus/monitor": "^0.11.0",
+    "@colyseus/schema": "^0.5.39",
     "@colyseus/social": "^0.10.2",
     "@types/bcrypt": "^3.0.0",
     "bcrypt": "^4.0.1",
