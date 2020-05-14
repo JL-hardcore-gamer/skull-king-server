@@ -125,11 +125,11 @@ function computeWinner(params: any) {
       'White Flag',
       'Bloody Mary'
     );
-  } else {
-    // Patrick: Maybe we should put this in a if
-    // Patrick: The else should never happen, when you it happen it's a bug
-    // Patrick: and we might want to know what is the issue
+  } else if (characters.every((character) => character === 'White Flag')) {
     winner = findFirstCardOwner(trickPlayerOrder, cardsPlayed, 'White Flag');
+  } else {
+    console.log('=== Error ===');
+    console.log('computeWinner() failed');
   }
 
   return { winner, skullKingCaptured, piratesCaptured };
