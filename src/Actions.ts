@@ -146,14 +146,14 @@ function computeWinner(params: any) {
 }
 
 /*
-  Who wins the trick? 
+  Who wins the trick?
   1/ if the Skull King is played:
     - check if there's also a Mermaid:
     -- if it is, the 1st mermaid played is the winner
     -- else, the SK is the winner
 
   2/ if the Bloody Mary is played as a pirate, the first card that is a pirate or a bloody Mary wins
-  
+
   3/ if a Pirate is played, the 1st pirate played is the winner
 
   4/ if a Mermaid is played, the 1st mermaid played is the winner
@@ -200,10 +200,8 @@ export class OnStartCommand extends Command<State, {}> {
    *
    */
   prepareRounds() {
-    let playersId: string[] = Object.keys(this.state.players).map(
-      (playerId: string) => {
-        return playerId;
-      }
+    const playersId: string[] = Object.keys(this.state.players).map(
+      (playerId: string) => playerId
     );
     /**
      * We want to get the first player for each round
@@ -236,13 +234,13 @@ export class OnStartCommand extends Command<State, {}> {
     /**
      * Create 10 rounds
      */
-    for (let roundId = 0; roundId < 10; ++roundId) {
-      let newShuffledDeck = shuffleArray([...prevDeck]);
-      let deckToDeal = [...newShuffledDeck];
+    for (let roundId = 0; roundId < 10; roundId += 1) {
+      const newShuffledDeck = shuffleArray([...prevDeck]);
+      const deckToDeal = [...newShuffledDeck];
       prevDeck = newShuffledDeck;
 
-      let playersHand = new MapSchema<PlayerHand>();
-      let playersScore = new MapSchema<PlayerRoundScore>();
+      const playersHand = new MapSchema<PlayerHand>();
+      const playersScore = new MapSchema<PlayerRoundScore>();
       /**
        * TODO : Need to improve
        * /!\ Complex part of the code
@@ -254,7 +252,7 @@ export class OnStartCommand extends Command<State, {}> {
         playersHand[playerId] = new PlayerHand();
         playersScore[playerId] = new PlayerRoundScore();
         let nbOfCardToDeal = roundId + 1;
-        for (nbOfCardToDeal; nbOfCardToDeal > 0; --nbOfCardToDeal) {
+        for (nbOfCardToDeal; nbOfCardToDeal > 0; nbOfCardToDeal -= 1) {
           const cardIdx = deckToDeal.shift();
           // This is the only way to duplicate correctly a class object
           const newCard = deck[cardIdx].clone();
@@ -262,9 +260,9 @@ export class OnStartCommand extends Command<State, {}> {
         }
       });
 
-      let roundStartingPlayer = shuffledPlayersId[roundId];
+      const roundStartingPlayer = shuffledPlayersId[roundId];
 
-      let newRound = new Round(
+      const newRound = new Round(
         roundId,
         // This should not be a int because an object key is always
         // a string anyway
@@ -275,13 +273,13 @@ export class OnStartCommand extends Command<State, {}> {
 
       this.state.game.remainingRounds.push(newRound);
 
-      let orderedPlayers = this.state.game.orderedPlayers;
-      orderedPlayers.push(parseInt(roundStartingPlayer));
+      const { orderedPlayers } = this.state.game;
+      orderedPlayers.push(parseInt(roundStartingPlayer, 10));
     }
 
     // only keep one id for each player
-    let orderedPlayers = this.state.game.orderedPlayers;
-    let numberOfPlayers = Object.keys(this.state.players).length;
+    const { orderedPlayers } = this.state.game;
+    const numberOfPlayers = Object.keys(this.state.players).length;
     orderedPlayers.splice(numberOfPlayers);
 
     // /!\ TODO Must be created dynamically by the round
@@ -293,19 +291,17 @@ export class OnStartCommand extends Command<State, {}> {
   }
 
   prepareScoreboard() {
-    let playersId: string[] = Object.keys(this.state.players).map(
-      (playerId: string) => {
-        return playerId;
-      }
+    const playersId: string[] = Object.keys(this.state.players).map(
+      (playerId: string) => playerId
     );
-    let scoreboard = this.state.game.scoreboard;
+    const { scoreboard } = this.state.game;
 
     playersId.forEach((playerId) => {
       scoreboard[playerId] = new PlayerGameScore();
     });
   }
 
-  execute(obj: any) {
+  execute() {
     this.prepareRounds();
     this.prepareScoreboard();
   }
@@ -316,32 +312,29 @@ export class OnCardReceivedCommand extends Command<
   { playerId: number; cardId: number; bloodyMaryChoice: string }
 > {
   removeCardFromPlayerHand(round: Round, playerId: number, cardId: number) {
-    const hand = round.playersHand[playerId].hand;
+    const { hand } = round.playersHand[playerId];
     const cardToRemoveIdx = hand.findIndex((card: Card) => card.id === cardId);
 
     hand.splice(cardToRemoveIdx, 1);
   }
 
   addCardtoCardsPlayed(playerId: number, card: Card) {
-    const cardsPlayed = this.state.currentTrick.cardsPlayed;
+    const { cardsPlayed } = this.state.currentTrick;
     cardsPlayed[playerId] = card;
   }
 
   defineTrickSuit(card: Card) {
-    if (card.suit === 'special') {
-      return;
-    } else {
+    if (card.suit !== 'special') {
       this.state.currentTrick.suit = card.suit;
     }
   }
 
   execute(obj: any) {
-    const deck = createDeck();
     const card = deck[obj.cardId];
     const trick = this.state.currentTrick;
-    const playerId = obj.playerId;
+    const { playerId } = obj;
     const round = this.state.game.remainingRounds[this.state.currentRound];
-    let suit = trick.suit;
+    const { suit } = trick;
 
     if (card.friendlyName === 'la Bloody Mary') {
       trick.bloodyMary = obj.bloodyMaryChoice;
@@ -363,7 +356,7 @@ export class AfterCardPlayedCommand extends Command<
 > {
   trickHasEnded() {
     const playerOrder = this.state.game.orderedPlayers;
-    const cardsPlayed = this.state.currentTrick.cardsPlayed;
+    const { cardsPlayed } = this.state.currentTrick;
     const numberOfCardsPlayed = Object.keys(cardsPlayed).length;
     return playerOrder.length === numberOfCardsPlayed;
   }
@@ -372,12 +365,12 @@ export class AfterCardPlayedCommand extends Command<
     const playerOrder = this.state.game.orderedPlayers;
     const id = playerOrder.indexOf(playerId);
     const newPlayerId = (id + 1) % playerOrder.length;
-    let newPlayer = playerOrder[newPlayerId];
+    const newPlayer = playerOrder[newPlayerId];
     this.state.currentTrick.currentPlayer = newPlayer;
   }
 
   updateScores(round: Round, result: any) {
-    const winner = result.winner;
+    const { winner } = result;
 
     this.state.currentTrick.winner = winner;
     round.playersScore[winner].skullKingCaptured += result.skullKingCaptured;
@@ -387,8 +380,8 @@ export class AfterCardPlayedCommand extends Command<
 
   execute(obj: any) {
     const trick = this.state.currentTrick;
-    const suit = trick.suit;
-    const cardsPlayed = trick.cardsPlayed;
+    const { suit } = trick;
+    const { cardsPlayed } = trick;
     const bloodyMaryChoice = trick.bloodyMary;
     const round = this.state.game.remainingRounds[this.state.currentRound];
     const absolutePlayerOrder = this.state.game.orderedPlayers;
@@ -413,7 +406,7 @@ export class AfterCardPlayedCommand extends Command<
 
 export class OnEndOfTrickCommand extends Command<State, {}> {
   startNextTrick(round: Round, trick: Trick) {
-    const winner = trick.winner;
+    const { winner } = trick;
     round.firstPlayer = winner;
     const nextID = trick.id + 1;
     this.state.currentTrick = new Trick(nextID, winner);
@@ -430,12 +423,11 @@ export class OnEndOfTrickCommand extends Command<State, {}> {
 
     const computePlayerScore = (playerId: number) => {
       const roundScore = playerScore[playerId];
-      const tricksBet = roundScore.tricksBet;
-      const tricksWon = roundScore.tricksWon;
-      const skullKingCaptured = roundScore.skullKingCaptured;
-      const piratesCaptured = roundScore.piratesCaptured;
-
-      let globalScore = gameScore[playerId];
+      const { tricksBet } = roundScore;
+      const { tricksWon } = roundScore;
+      const { skullKingCaptured } = roundScore;
+      const { piratesCaptured } = roundScore;
+      const globalScore = gameScore[playerId];
       let difference: number;
       let points = 0;
 
@@ -488,14 +480,14 @@ export class OnEndOfTrickCommand extends Command<State, {}> {
   startNextRound() {
     this.state.currentRound += 1;
     const nextRound = this.state.game.remainingRounds[this.state.currentRound];
-    const startingPlayer = nextRound.startingPlayer;
+    const { startingPlayer } = nextRound;
     this.state.currentTrick = new Trick(1, startingPlayer);
   }
 
   execute() {
     const round = this.state.game.remainingRounds[this.state.currentRound];
     const trick = this.state.currentTrick;
-    const playersScore = round.playersScore;
+    const { playersScore } = round;
     const gameScore = this.state.game.scoreboard;
 
     if (round.remainingTricks) {
@@ -514,13 +506,11 @@ export class OnEndOfGameCommand extends Command<State, {}> {
     const playerIds = Object.keys(
       this.state.game.remainingRounds[9].playersScore
     );
-    const scores = playerIds.map((playerId) => {
-      return gameScore[playerId].totalScore;
-    });
+    const scores = playerIds.map((playerId) => gameScore[playerId].totalScore);
     const winningScore = Math.max(...scores);
 
     playerIds.forEach((playerId) => {
-      let playerScore = gameScore[playerId].totalScore;
+      const playerScore = gameScore[playerId].totalScore;
       if (playerScore === winningScore) {
         this.state.game.winners.push(playerId);
       }
