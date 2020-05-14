@@ -60,7 +60,7 @@ describe('findFirstCardOwner()', () => {
     const trick = setupTrick([cardsId, 'blue', , 'escape']);
 
     expect(
-      findFirstCardOwner(trick.playerOrder, trick.cardsPlayed, 'Mermaid')
+      findFirstCardOwner(trick.trickPlayerOrder, trick.cardsPlayed, 'Mermaid')
     ).toBe(5);
   });
 
@@ -72,7 +72,7 @@ describe('findFirstCardOwner()', () => {
 
     expect(
       findFirstCardOwner(
-        trick.playerOrder,
+        trick.trickPlayerOrder,
         trick.cardsPlayed,
         'Pirate',
         'Bloody Mary'
@@ -88,7 +88,7 @@ describe('findFirstCardOwner()', () => {
 
     expect(
       findFirstCardOwner(
-        trick.playerOrder,
+        trick.trickPlayerOrder,
         trick.cardsPlayed,
         'Pirate',
         'Bloody Mary'
@@ -99,7 +99,7 @@ describe('findFirstCardOwner()', () => {
 
 describe('computeWinner()', () => {
   test('Black wins over suit cards (Mary as an Escape)', () => {
-    const trick = Object.values(setupTrick());
+    const trick = setupTrick();
     const result = { winner: 1, skullKingCaptured: 0, piratesCaptured: 0 };
 
     expect(computeWinner(trick)).toEqual(result);
@@ -109,7 +109,7 @@ describe('computeWinner()', () => {
     const cardsId = [53, 58, 54, 57, 41, 65];
     // sirène, pirate, sirène, pirate, 3 noir, bloody Mary
 
-    const trick = Object.values(setupTrick([cardsId, 'black', , 'escape']));
+    const trick = setupTrick([cardsId, 'black', , 'escape']);
 
     const result = { winner: 3, skullKingCaptured: 0, piratesCaptured: 0 };
 
@@ -120,7 +120,7 @@ describe('computeWinner()', () => {
     const cardsId = [51, 16, 53, 54, 41, 64];
     //  13 noir, 4 bleu, sirène, sirène, 3 noir, escape
 
-    const trick = Object.values(setupTrick([cardsId, 'black']));
+    const trick = setupTrick([cardsId, 'black']);
 
     const result = { winner: 4, skullKingCaptured: 0, piratesCaptured: 0 };
 
@@ -131,7 +131,7 @@ describe('computeWinner()', () => {
     const cardsId = [51, 16, 53, 58, 41, 64];
     //  13 noir, 4 bleu, sirène, pirate, 3 noir, escape
 
-    const trick = Object.values(setupTrick([cardsId, 'black']));
+    const trick = setupTrick([cardsId, 'black']);
 
     const result = { winner: 2, skullKingCaptured: 0, piratesCaptured: 0 };
 
@@ -142,7 +142,7 @@ describe('computeWinner()', () => {
     const cardsId = [52, 16, 53, 51, 41, 64];
     //  skull king, 4 bleu, sirène, 13 noir, 3 noir, escape
 
-    const trick = Object.values(setupTrick([cardsId, 'blue']));
+    const trick = setupTrick([cardsId, 'blue']);
 
     const result = { winner: 4, skullKingCaptured: 1, piratesCaptured: 0 };
 
@@ -153,7 +153,7 @@ describe('computeWinner()', () => {
     const cardsId = [52, 16, 53, 58, 41, 54];
     //  skull king, 4 bleu, sirène, pirate, 3 noir, sirène
 
-    const trick = Object.values(setupTrick([cardsId, 'blue']));
+    const trick = setupTrick([cardsId, 'blue']);
 
     const result = { winner: 4, skullKingCaptured: 1, piratesCaptured: 0 };
 
@@ -164,7 +164,7 @@ describe('computeWinner()', () => {
     const cardsId = [52, 16, 58, 51, 41, 56];
     //  skull king, 4 bleu, pirate, 13 noir, 3 noir, pirate
 
-    const trick = Object.values(setupTrick([cardsId, 'blue']));
+    const trick = setupTrick([cardsId, 'blue']);
 
     const result = { winner: 5, skullKingCaptured: 0, piratesCaptured: 2 };
 
@@ -175,7 +175,7 @@ describe('computeWinner()', () => {
     const cardsId = [52, 16, 65, 51, 41, 13];
     //  skull king, 4 bleu, bloody Mary, 13 noir, 3 noir, 1 bleu
 
-    const trick = Object.values(setupTrick([cardsId, 'blue', , 'escape']));
+    const trick = setupTrick([cardsId, 'blue', , 'escape']);
 
     const result = { winner: 5, skullKingCaptured: 0, piratesCaptured: 1 };
 
@@ -186,7 +186,7 @@ describe('computeWinner()', () => {
     const cardsId = [52, 16, 65, 51, 41, 13];
     //  skull king, 4 bleu, bloody Mary, 13 noir, 3 noir, 1 bleu
 
-    const trick = Object.values(setupTrick([cardsId, 'blue', , 'pirate']));
+    const trick = setupTrick([cardsId, 'blue', , 'pirate']);
 
     const result = { winner: 5, skullKingCaptured: 0, piratesCaptured: 1 };
 
@@ -198,7 +198,7 @@ describe('computeWinner()', () => {
     // all escape flags
     const playerOrder = [4, 2, 1, 3, 5];
 
-    const trick = Object.values(setupTrick([cardsId, undefined, playerOrder]));
+    const trick = setupTrick([cardsId, undefined, playerOrder]);
 
     const result = { winner: 4, skullKingCaptured: 0, piratesCaptured: 0 };
 
@@ -209,7 +209,7 @@ describe('computeWinner()', () => {
     const cardsId = [13, 12, 38, 11, 35, 37];
     // 1 bleu, 13 rouge, 13 jaune, 12 rouge, 10 jaune, 12 jaune
 
-    const trick = Object.values(setupTrick([cardsId, 'blue']));
+    const trick = setupTrick([cardsId, 'blue']);
 
     const result = { winner: 5, skullKingCaptured: 0, piratesCaptured: 0 };
 

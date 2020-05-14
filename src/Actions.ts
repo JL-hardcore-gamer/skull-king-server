@@ -73,10 +73,18 @@ const findFirstCardOwner = function (
 
 // input: [suit, cardsPlayed, trickPlayerOrder, bloodyMaryChoice]
 function computeWinner(params: any) {
-  const suit: string = params[0];
-  const cardsPlayed: MapSchema<Card> = params[1];
-  const trickPlayerOrder: number[] = params[2];
-  const bloodyMaryChoice: string = params[3];
+  const {
+    suit,
+    cardsPlayed,
+    trickPlayerOrder,
+    bloodyMaryChoice,
+  }: {
+    suit: string;
+    cardsPlayed: MapSchema<Card>;
+    trickPlayerOrder: number[];
+    bloodyMaryChoice: string;
+  } = params;
+
   const cards = Object.values(cardsPlayed);
   const characters = cards.map((card) => card.character);
   const suits = cards.map((card) => card.suit);
@@ -130,6 +138,8 @@ function computeWinner(params: any) {
   } else {
     console.log('=== Error ===');
     console.log('computeWinner() failed');
+    console.log('Characters', characters);
+    console.log('Suit:', suit);
   }
 
   return { winner, skullKingCaptured, piratesCaptured };
