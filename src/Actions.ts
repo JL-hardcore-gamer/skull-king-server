@@ -398,12 +398,12 @@ export class AfterCardPlayedCommand extends Command<
     );
 
     if (this.trickHasEnded()) {
-      const result = computeWinner([
+      const result = computeWinner({
         suit,
         cardsPlayed,
         trickPlayerOrder,
         bloodyMaryChoice,
-      ]);
+      });
       this.updateScores(round, result);
     } else {
       this.computeNextPlayer(obj.playerId);
