@@ -94,7 +94,7 @@ function computeWinner(params: any) {
       if (bloodyMaryChoice) piratesCaptured += 1;
 
       piratesCaptured += cards.reduce((nbOfPirates, card) => {
-        card.character === 'Pirate' ? nbOfPirates + 1 : nbOfPirates;
+        return card.character === 'Pirate' ? nbOfPirates + 1 : nbOfPirates;
       }, 0);
     }
   } else if (

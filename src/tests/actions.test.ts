@@ -160,14 +160,35 @@ describe('computeWinner()', () => {
     expect(computeWinner(trick)).toEqual(result);
   });
 
-  // Found a bug !! :D need to solve it now (skipping the test)
-  test.skip('Skull King captures pirates', () => {
+  test('Skull King captures pirates', () => {
     const cardsId = [52, 16, 58, 51, 41, 56];
     //  skull king, 4 bleu, pirate, 13 noir, 3 noir, pirate
 
     const trick = Object.values(setupTrick([cardsId, 'blue']));
 
     const result = { winner: 5, skullKingCaptured: 0, piratesCaptured: 2 };
+
+    expect(computeWinner(trick)).toEqual(result);
+  });
+
+  test('Skull King captures bloody Mary (escape)', () => {
+    const cardsId = [52, 16, 65, 51, 41, 14];
+    //  skull king, 4 bleu, bloody Mary, 13 noir, 3 noir, 1 bleu
+
+    const trick = Object.values(setupTrick([cardsId, 'blue', , 'escape']));
+
+    const result = { winner: 5, skullKingCaptured: 0, piratesCaptured: 1 };
+
+    expect(computeWinner(trick)).toEqual(result);
+  });
+
+  test('Skull King captures bloody Mary (pirate)', () => {
+    const cardsId = [52, 16, 65, 51, 41, 14];
+    //  skull king, 4 bleu, bloody Mary, 13 noir, 3 noir, 1 bleu
+
+    const trick = Object.values(setupTrick([cardsId, 'blue', , 'pirate']));
+
+    const result = { winner: 5, skullKingCaptured: 0, piratesCaptured: 1 };
 
     expect(computeWinner(trick)).toEqual(result);
   });
