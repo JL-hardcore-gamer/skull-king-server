@@ -54,7 +54,7 @@ describe('computeTrickPlayerOrder()', () => {
 
 describe('findFirstCardOwner()', () => {
   test('Find first mermaid played', () => {
-    const cardsId = [53, 14, 54, 24, 41, 65];
+    const cardsId = [53, 13, 54, 24, 41, 65];
     // sirène, 1 bleu, sirène, 12 bleu, 3 noir, bloody Mary
 
     const trick = setupTrick([cardsId, 'blue', , 'escape']);
@@ -172,7 +172,7 @@ describe('computeWinner()', () => {
   });
 
   test('Skull King captures bloody Mary (escape)', () => {
-    const cardsId = [52, 16, 65, 51, 41, 14];
+    const cardsId = [52, 16, 65, 51, 41, 13];
     //  skull king, 4 bleu, bloody Mary, 13 noir, 3 noir, 1 bleu
 
     const trick = Object.values(setupTrick([cardsId, 'blue', , 'escape']));
@@ -183,12 +183,35 @@ describe('computeWinner()', () => {
   });
 
   test('Skull King captures bloody Mary (pirate)', () => {
-    const cardsId = [52, 16, 65, 51, 41, 14];
+    const cardsId = [52, 16, 65, 51, 41, 13];
     //  skull king, 4 bleu, bloody Mary, 13 noir, 3 noir, 1 bleu
 
     const trick = Object.values(setupTrick([cardsId, 'blue', , 'pirate']));
 
     const result = { winner: 5, skullKingCaptured: 0, piratesCaptured: 1 };
+
+    expect(computeWinner(trick)).toEqual(result);
+  });
+
+  test('Flags only: winner is the first player', () => {
+    const cardsId = [63, 61, 60, 62, 64];
+    // all escape flags
+    const playerOrder = [4, 2, 1, 3, 5];
+
+    const trick = Object.values(setupTrick([cardsId, undefined, playerOrder]));
+
+    const result = { winner: 4, skullKingCaptured: 0, piratesCaptured: 0 };
+
+    expect(computeWinner(trick)).toEqual(result);
+  });
+
+  test('Suit color wins over higher cards of other suits (except black)', () => {
+    const cardsId = [13, 12, 38, 11, 35, 37];
+    // 1 bleu, 13 rouge, 13 jaune, 12 rouge, 10 jaune, 12 jaune
+
+    const trick = Object.values(setupTrick([cardsId, 'blue']));
+
+    const result = { winner: 5, skullKingCaptured: 0, piratesCaptured: 0 };
 
     expect(computeWinner(trick)).toEqual(result);
   });
