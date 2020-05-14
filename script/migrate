@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# Only to be run on first deploy
+
+touch src/db/game.db
+node script/setupDB.js

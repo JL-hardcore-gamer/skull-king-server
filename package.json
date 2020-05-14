@@ -4,6 +4,7 @@
   "description": "npm init template for bootstraping an empty Colyseus project",
   "main": "lib/index.js",
   "scripts": {
+    "migrate": "./script/migrate",
     "start": "nodemon",
     "loadtest": "colyseus-loadtest --room SkullKing --numClients 10",
     "test": "jest --watch",
